@@ -1,0 +1,32 @@
+package core
+
+// 响应方式
+var RESPONSE_MODE_HTTP_STATUS = "httpStatus"
+var RESPONSE_MODE_ALWAYS200 = "always200"
+
+// 响应Code
+var (
+	CODE_PARAMS_MISSING       = 10001
+	CODE_PARAMS_UNEXPECT      = 10002
+	CODE_SIGNATURE_SIG_ERROR  = 20001
+	CODE_SIGNATURE_MISSING    = 20002
+	CODE_SIGNATURE_PARSE_FAIL = 20003
+)
+
+// 响应Code对应文案
+var CodeMsgMap map[int]string = map[int]string{
+	CODE_PARAMS_MISSING:       "参数缺失",
+	CODE_PARAMS_UNEXPECT:      "参数不正确",
+	CODE_SIGNATURE_SIG_ERROR:  "签名不正确",
+	CODE_SIGNATURE_MISSING:    "签名参数缺失",
+	CODE_SIGNATURE_PARSE_FAIL: "签名解析失败或错误",
+}
+
+// 响应Code对应http status
+var CodeStatusMap map[int]int = map[int]int{
+	CODE_PARAMS_MISSING:       400,
+	CODE_PARAMS_UNEXPECT:      400,
+	CODE_SIGNATURE_SIG_ERROR:  400,
+	CODE_SIGNATURE_MISSING:    400,
+	CODE_SIGNATURE_PARSE_FAIL: 400,
+}
