@@ -45,12 +45,12 @@ func RedisExec(params ...any) (reply interface{}, err error) {
 	return conn.Do("set", params...)
 }
 
-func RedisSet(key string, value string, expireLong ...int) (reply interface{}, err error) {
-	finalExpireLong := -1
-	if len(expireLong) > 0 {
-		finalExpireLong = expireLong[0]
+func RedisSet(key string, value any, ttl ...int) (reply interface{}, err error) {
+	conn := Redis.Get()
+	if len(ttl) > 0 {
+		return conn.Do("set", key, value, "EX", ttl[0])
 	}
-	return RedisExec(key, value, "EX", finalExpireLong)
+	return conn.Do("set", key, value)
 }
 
 func RedisGet(key string) (reply interface{}, err error) {

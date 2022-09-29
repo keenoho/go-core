@@ -27,5 +27,12 @@ type SignatureData struct {
 	Ttl     int    `json:"ttl"`
 	Ts      int    `json:"ts"`
 	Nonce   string `json:"nonce"`
-	Data    any    `json:"data"`
+	Data    string `json:"data"`
+}
+
+type SignatureInnerData struct {
+	Id      int64  `json:"id"`
+	Account string `json:"account"`
+	Name    string `json:"name"`
+	Role    int64  `json:"role"`
 }

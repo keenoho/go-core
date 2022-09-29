@@ -20,6 +20,7 @@ func CreateApp() *gin.Engine {
 	app.Use(ErrorHandler())
 	app.Use(LoggerMiddleware())
 	app.Use(CorsMiddleware())
+	app.Use(SessionMiddleware())
 	app.NoRoute(NotFoundHandler())
 
 	return app

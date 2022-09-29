@@ -82,10 +82,7 @@ func GetServerIp() string {
 		if iface.Flags&net.FlagLoopback != 0 {
 			continue // loopback interface
 		}
-		addrs, err := iface.Addrs()
-		if err != nil {
-			fmt.Println(err)
-		}
+		addrs, _ := iface.Addrs()
 		for _, addr := range addrs {
 			var ip net.IP
 			switch v := addr.(type) {

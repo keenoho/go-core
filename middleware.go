@@ -99,3 +99,20 @@ func LoggerMiddleware() gin.HandlerFunc {
 		ctx.Next()
 	}
 }
+
+// 授权session
+func SessionMiddleware() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		headerApp := ctx.GetHeader("x-app")
+		headerSignature := ctx.GetHeader("x-signature")
+
+		// 检查判空,解析
+		if headerApp != "" && headerSignature != "" {
+			data, err := ParseSignature(headerSignature, headerApp)
+			if err == nil {
+				ctx.Set("signatureData", data)
+			}
+		}
+		ctx.Next()
+	}
+}

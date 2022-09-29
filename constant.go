@@ -11,6 +11,7 @@ var (
 	CODE_SIGNATURE_SIG_ERROR  = 20001
 	CODE_SIGNATURE_MISSING    = 20002
 	CODE_SIGNATURE_PARSE_FAIL = 20003
+	CODE_SIGNATURE_EXPIRED    = 20004
 )
 
 // 响应Code对应文案
@@ -20,6 +21,7 @@ var CodeMsgMap map[int]string = map[int]string{
 	CODE_SIGNATURE_SIG_ERROR:  "签名不正确",
 	CODE_SIGNATURE_MISSING:    "签名参数缺失",
 	CODE_SIGNATURE_PARSE_FAIL: "签名解析失败或错误",
+	CODE_SIGNATURE_EXPIRED:    "签名过期",
 }
 
 // 响应Code对应http status
@@ -29,4 +31,5 @@ var CodeStatusMap map[int]int = map[int]int{
 	CODE_SIGNATURE_SIG_ERROR:  400,
 	CODE_SIGNATURE_MISSING:    400,
 	CODE_SIGNATURE_PARSE_FAIL: 400,
+	CODE_SIGNATURE_EXPIRED:    400,
 }

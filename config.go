@@ -30,6 +30,7 @@ type ConfigData struct {
 	RedisPassword     string
 	RedisHost         string
 	RedisPort         string
+	SystemceHost      string
 }
 
 var saveConfig ConfigData
@@ -65,6 +66,7 @@ func GetConfig() ConfigData {
 	conf.RedisPassword = os.Getenv("REDIS_PASSWORD")
 	conf.RedisHost = os.Getenv("REDIS_HOST")
 	conf.RedisPort = os.Getenv("REDIS_PORT")
+	conf.SystemceHost = os.Getenv("SYSTEMCE_HOST")
 
 	return conf
 }

@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// web controller
 type WebControllerInterface interface {
 	Init()
 	URLMapping()
