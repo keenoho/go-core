@@ -1,5 +1,8 @@
 package core
 
+// 签名特征
+var CTX_SIGNATURE_DATA_KEY = "signatureData"
+
 // 响应方式
 var RESPONSE_MODE_HTTP_STATUS = "httpStatus"
 var RESPONSE_MODE_ALWAYS200 = "always200"
