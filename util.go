@@ -107,7 +107,7 @@ func GetServerIp() string {
 // 检查参数
 func CheckParams(ctx *gin.Context, queryBind any) {
 	if queryBind != nil {
-		err := ctx.ShouldBind(queryBind)
+		err := ctx.Copy().ShouldBind(queryBind)
 		if err != nil {
 			log.Println(err)
 			panic(ErrorData{Code: CODE_PARAMS_MISSING})
