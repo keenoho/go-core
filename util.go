@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 // 响应结构体, 参数:data,code,msg,status
@@ -170,4 +171,10 @@ func ParseSignature(signature string, app string) (SignatureData, error) {
 	}
 
 	return data, nil
+}
+
+// 生成uuid
+func MakeUUID() string {
+	u4 := uuid.New()
+	return u4.String()
 }
