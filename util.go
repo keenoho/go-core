@@ -1,6 +1,7 @@
 package core
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net"
@@ -117,7 +118,7 @@ func CheckParams(ctx *gin.Context, queryBind any) {
 }
 
 // 签名
-func MakeSig(app int64, nonce string, ts int, ttl int, data string, appScrectKey string) string {
+func MakeSig(app int64, nonce string, ts int64, ttl int, data string, appScrectKey string) string {
 	strArr := strings.Split(fmt.Sprintf("%d%s%d%d%s", app, nonce, ts, ttl, data), "")
 	sort.Strings(strArr)
 	sig := EncryptHMACSHA1(strings.Join(strArr, ""), appScrectKey)
@@ -125,8 +126,8 @@ func MakeSig(app int64, nonce string, ts int, ttl int, data string, appScrectKey
 }
 
 // 签名
-func MakeSignature(app int64, sig string, nonce string, ts int, ttl int, data string) string {
-	expired := ts + ttl*1000
+func MakeSignature(app int64, sig string, nonce string, ts int64, ttl int, data string) string {
+	expired := ts + int64(ttl)*1000
 	str := fmt.Sprintf("%d|%d|%s|%s|%d|%d|%s", expired, app, sig, nonce, ts, ttl, data)
 	key := fmt.Sprintf("%d", app)
 	signature := EncryptAes(str, key)
@@ -156,7 +157,7 @@ func ParseSignature(signature string, app string) (SignatureData, error) {
 			data.Nonce = v
 			continue
 		case 4:
-			data.Ts, _ = strconv.Atoi(v)
+			data.Ts, _ = strconv.ParseInt(v, 10, 64)
 			continue
 		case 5:
 			data.Ttl, _ = strconv.Atoi(v)
@@ -171,6 +172,13 @@ func ParseSignature(signature string, app string) (SignatureData, error) {
 	}
 
 	return data, nil
+}
+
+// 解析data json字符串
+func ParseSignatureInnerDataJsonStr(str string) (SignatureInnerData, error) {
+	var innerData SignatureInnerData
+	var err = json.Unmarshal([]byte(str), &innerData)
+	return innerData, err
 }
 
 // 生成uuid

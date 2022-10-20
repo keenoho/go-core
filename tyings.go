@@ -25,7 +25,7 @@ type SignatureData struct {
 	App     int64  `json:"app"`
 	Sig     string `json:"sig"`
 	Ttl     int    `json:"ttl"`
-	Ts      int    `json:"ts"`
+	Ts      int64  `json:"ts"`
 	Nonce   string `json:"nonce"`
 	Data    string `json:"data"`
 }
