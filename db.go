@@ -7,6 +7,7 @@ import (
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 var Db *gorm.DB
@@ -16,9 +17,13 @@ func LoadDb() {
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true&loc=%s", conf.DbUsername, conf.DbPassword, conf.DbHost, conf.DbPort, conf.DbDatabase, "Asia%2fShanghai")
 
 	mysqlDb := mysql.Open(dsn)
-	linkDb, err := gorm.Open(mysqlDb, &gorm.Config{
-		// Logger: logger.Default.LogMode(logger.Info),
-	})
+	ormConfig := gorm.Config{}
+	if conf.Env == "production" {
+		ormConfig.Logger = logger.Default.LogMode(logger.Error)
+	} else {
+		ormConfig.Logger = logger.Default.LogMode(logger.Info)
+	}
+	linkDb, err := gorm.Open(mysqlDb, &ormConfig)
 	if err != nil {
 		log.Fatal(err)
 	}

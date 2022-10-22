@@ -186,3 +186,10 @@ func MakeUUID() string {
 	u4 := uuid.New()
 	return u4.String()
 }
+
+// page size分页
+func MakePageSize(page int, size int) (offset int, limit int) {
+	limit = size
+	offset = (page - 1) * size
+	return offset, limit
+}
