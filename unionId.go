@@ -25,7 +25,7 @@ func CreateUnionId() int64 {
 	timeId := fmt.Sprintf("%d", now.UnixMicro()/1e3)
 	timeId = timeId[len(timeId)-7:]
 	randId := ""
-	randNum := rand.Intn(100)
+	randNum := rand.Intn(99)
 	if randNum < 10 {
 		randId = fmt.Sprintf("0%d", randNum)
 	} else {
@@ -37,9 +37,8 @@ func CreateUnionId() int64 {
 	} else {
 		nextId = fmt.Sprintf("%d", nextNum)
 	}
-
-	finalId, _ := strconv.ParseInt(yearId+randId+serviceId+timeId+nextId, 10, 16)
-	return int64(finalId)
+	finalId, _ := strconv.ParseInt(yearId+randId+serviceId+timeId+nextId, 10, 64)
+	return finalId
 }
 
 func init() {
