@@ -6,6 +6,7 @@ import (
 	"crypto/cipher"
 	"crypto/hmac"
 	"crypto/md5"
+	"crypto/rc4"
 	"crypto/sha1"
 	"encoding/hex"
 	"strings"
@@ -49,7 +50,6 @@ func EncryptHMACSHA1(str string, key string) string {
 	mac := hmac.New(sha1.New, []byte(key))
 	mac.Write([]byte(str))
 	res := hex.EncodeToString(mac.Sum(nil))
-
 	return res
 }
 
@@ -57,4 +57,19 @@ func EncryptMd5(value string) string {
 	h := md5.New()
 	h.Write([]byte(value))
 	return hex.EncodeToString(h.Sum(nil))
+}
+
+func EncryptRC4(str string, key string) string {
+	dest := make([]byte, len(str))
+	cipher, _ := rc4.NewCipher([]byte(key))
+	cipher.XORKeyStream(dest, []byte(str))
+	return strings.ToUpper(hex.EncodeToString(dest))
+}
+
+func DecryptRC4(str string, key string) string {
+	ciphertext, _ := hex.DecodeString(strings.ToUpper(str))
+	dest := make([]byte, len(ciphertext))
+	cipher, _ := rc4.NewCipher([]byte(key))
+	cipher.XORKeyStream(dest, []byte(ciphertext))
+	return string(dest)
 }

@@ -13,6 +13,7 @@ type ConfigData struct {
 	Host              string
 	Port              int
 	Key               string
+	KeySalt           string
 	StaticDir         string
 	StaticPath        string
 	UploadDir         string
@@ -49,6 +50,7 @@ func GetConfig() ConfigData {
 	conf.Host = os.Getenv("SERVER_HOST")
 	conf.Port = port
 	conf.Key = os.Getenv("KEY")
+	conf.KeySalt = os.Getenv("KEY_SALT")
 	conf.StaticDir = os.Getenv("STATIC_DIR")
 	conf.StaticPath = os.Getenv("STATIC_PATH")
 	conf.UploadDir = os.Getenv("UPLOAD_DIR")
