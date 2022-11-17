@@ -26,7 +26,7 @@ var CodeMsgMap map[int]string = map[int]string{
 	CODE_SIGNATURE_MISSING:    "签名参数缺失",
 	CODE_SIGNATURE_PARSE_FAIL: "签名解析失败或错误",
 	CODE_SIGNATURE_EXPIRED:    "签名过期",
-	CODE_SIGNATURE_NO_AUTH:    "签名或该用户未授权该功能",
+	CODE_SIGNATURE_NO_AUTH:    "签名失效或该用户未授权该功能",
 }
 
 // 响应Code对应http status
