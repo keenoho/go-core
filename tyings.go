@@ -31,8 +31,8 @@ type SignatureData struct {
 }
 
 type SignatureInnerData struct {
-	Id      int64  `json:"id"`
-	Account string `json:"account"`
-	Name    string `json:"name"`
-	Role    int64  `json:"role"`
+	Id      int64   `json:"id"`
+	Account string  `json:"account"`
+	Name    string  `json:"name"`
+	Role    []int64 `json:"role"`
 }
