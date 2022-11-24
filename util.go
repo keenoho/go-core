@@ -193,3 +193,17 @@ func MakePageSize(page int, size int) (offset int, limit int) {
 	offset = (page - 1) * size
 	return offset, limit
 }
+
+// 增加自定义codeMsg
+func AddCodeMsgMap(msgMap map[int]string) {
+	for key, value := range msgMap {
+		CodeMsgMap[key] = value
+	}
+}
+
+// 增加自定义codeStatus
+func AddCodeStatusMap(statusMap map[int]int) {
+	for key, value := range statusMap {
+		CodeStatusMap[key] = value
+	}
+}
