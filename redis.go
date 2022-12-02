@@ -18,7 +18,7 @@ func LoadRedis() {
 
 	Redis = redis.Pool{
 		MaxIdle:   2,    // 空闲链接数
-		MaxActive: 1000, // 最大链接数
+		MaxActive: 5000, // 最大链接数
 		Dial: func() (redis.Conn, error) {
 			return redis.Dial("tcp", address, redis.DialPassword(conf.RedisPassword), redis.DialDatabase(db), redis.DialWriteTimeout(10*time.Second), redis.DialReadTimeout(10*time.Second))
 		},
@@ -44,7 +44,9 @@ func GetRedisConnect() redis.Conn {
 
 func RedisExec(params ...any) (reply interface{}, err error) {
 	conn := Redis.Get()
-	return conn.Do("set", params...)
+	reply, err = conn.Do("set", params...)
+	conn.Close()
+	return reply, err
 }
 
 func RedisSet(key string, value any, ttl ...int) (reply interface{}, err error) {
