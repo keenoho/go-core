@@ -27,10 +27,12 @@ type ConfigData struct {
 	DbPassword        string
 	DbHost            string
 	DbPort            string
+	DbMode            string
 	RedisDatabase     string
 	RedisPassword     string
 	RedisHost         string
 	RedisPort         string
+	RedisMode         string
 	SystemceHost      string
 }
 
@@ -64,13 +66,24 @@ func GetConfig() ConfigData {
 	conf.DbPassword = os.Getenv("DB_PASSWORD")
 	conf.DbHost = os.Getenv("DB_HOST")
 	conf.DbPort = os.Getenv("DB_PORT")
+	conf.DbMode = os.Getenv("DB_MODE")
 	conf.RedisDatabase = os.Getenv("REDIS_DATABASE")
 	conf.RedisPassword = os.Getenv("REDIS_PASSWORD")
 	conf.RedisHost = os.Getenv("REDIS_HOST")
 	conf.RedisPort = os.Getenv("REDIS_PORT")
+	conf.RedisMode = os.Getenv("REDIS_MODE")
 	conf.SystemceHost = os.Getenv("SYSTEMCE_HOST")
 
 	return conf
+}
+
+// 获取自定义字段
+func GetCustomConfig(keys ...string) map[string]string {
+	var result = map[string]string{}
+	for _, k := range keys {
+		result[k] = os.Getenv(k)
+	}
+	return result
 }
 
 // 加载配置

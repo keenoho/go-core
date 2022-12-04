@@ -1,6 +1,9 @@
 package core
 
 import (
+	"fmt"
+	"time"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -35,4 +38,11 @@ type SignatureInnerData struct {
 	Account string  `json:"account"`
 	Name    string  `json:"name"`
 	Role    []int64 `json:"role"`
+}
+
+type EntityTime time.Time
+
+func (t *EntityTime) MarshalJSON() ([]byte, error) {
+	tTime := time.Time(*t)
+	return []byte(fmt.Sprintf("%d", tTime.UnixMicro()/1e3)), nil
 }
