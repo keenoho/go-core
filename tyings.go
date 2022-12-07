@@ -1,6 +1,7 @@
 package core
 
 import (
+	"database/sql/driver"
 	"fmt"
 	"time"
 
@@ -45,4 +46,21 @@ type EntityTime time.Time
 func (t *EntityTime) MarshalJSON() ([]byte, error) {
 	tTime := time.Time(*t)
 	return []byte(fmt.Sprintf("%d", tTime.UnixMicro()/1e3)), nil
+}
+
+func (t EntityTime) Value() (driver.Value, error) {
+	var zeroTime time.Time
+	tlt := time.Time(t)
+	if tlt.UnixNano() == zeroTime.UnixNano() {
+		return nil, nil
+	}
+	return tlt, nil
+}
+
+func (t *EntityTime) Scan(v interface{}) error {
+	if value, ok := v.(time.Time); ok {
+		*t = EntityTime(value)
+		return nil
+	}
+	return fmt.Errorf("can not convert %v to timestamp", v)
 }
