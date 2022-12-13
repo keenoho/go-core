@@ -34,6 +34,8 @@ type ConfigData struct {
 	RedisPort         string
 	RedisMode         string
 	SystemceHost      string
+	AppType           string
+	App               string
 }
 
 var saveConfig ConfigData
@@ -45,11 +47,11 @@ func GetConfig() ConfigData {
 	}
 	var conf ConfigData
 
-	portStr := os.Getenv("SERVER_PORT")
+	portStr := os.Getenv("PORT")
 	port, _ := strconv.Atoi(portStr)
 
 	conf.Env = os.Getenv("ENV")
-	conf.Host = os.Getenv("SERVER_HOST")
+	conf.Host = os.Getenv("HOST")
 	conf.Port = port
 	conf.Key = os.Getenv("KEY")
 	conf.KeySalt = os.Getenv("KEY_SALT")
@@ -73,6 +75,8 @@ func GetConfig() ConfigData {
 	conf.RedisPort = os.Getenv("REDIS_PORT")
 	conf.RedisMode = os.Getenv("REDIS_MODE")
 	conf.SystemceHost = os.Getenv("SYSTEMCE_HOST")
+	conf.AppType = os.Getenv("APP_TYPE")
+	conf.App = os.Getenv("APP")
 
 	return conf
 }
@@ -107,10 +111,10 @@ func LoadConfig() {
 	os.Setenv("ENV", env)
 
 	if len(host) > 0 {
-		os.Setenv("SERVER_HOST", host)
+		os.Setenv("HOST", host)
 	}
 	if len(port) > 0 {
-		os.Setenv("SERVER_PORT", port)
+		os.Setenv("PORT", port)
 	}
 	if len(key) > 0 {
 		os.Setenv("KEY", key)

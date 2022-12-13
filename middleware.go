@@ -107,10 +107,8 @@ func SessionMiddleware() gin.HandlerFunc {
 		headerSignature := ctx.GetHeader("x-signature")
 
 		// 检查判空,解析
-		if len(headerApp) > 0 &&
-			len(headerSignature) > 0 &&
-			headerSignature != "null" &&
-			headerSignature != "undefined" {
+		if len(headerApp) >= 16 &&
+			len(headerSignature) >= 16 {
 			data, err := ParseSignature(headerSignature, headerApp)
 			if err == nil {
 				ctx.Set(CTX_SIGNATURE_DATA_KEY, data)
