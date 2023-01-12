@@ -1,19 +1,18 @@
 syntax = "proto3";
-option go_package = "./;proto";
+
+option go_package = "../;proto";
  
 message MessageResponse {
   int64 code = 1;
-  string data = 2;
+  bytes data = 2;
   string msg = 3;
-  string server = 4;
-  string tid = 5;
+  string tid = 4;
 }
  
 message MessageRequest {
   string type = 1;
-  string data = 2;
-  string client = 3;
-  string tid = 4;
+  bytes data = 2;
+  string tid = 3;
 }
  
 service MessageSender {
