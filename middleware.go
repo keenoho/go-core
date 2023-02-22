@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"reflect"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -96,7 +97,10 @@ func CorsMiddleware() gin.HandlerFunc {
 // 日志
 func LoggerMiddleware() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		start := time.Now()
 		ctx.Next()
+		latency := time.Since(start)
+		log.Printf("[%s][%s] %s - %d %dms %dB", ctx.ClientIP(), ctx.Request.Method, ctx.Request.URL.Path, ctx.Writer.Status(), latency.Microseconds(), ctx.Writer.Size())
 	}
 }
 

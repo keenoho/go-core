@@ -6,13 +6,11 @@ message ServiceMsgResponse {
   int64 code = 1;
   bytes data = 2;
   string msg = 3;
-  string tid = 4;
 }
  
 message ServiceMsgRequest {
   string type = 1;
   bytes data = 2;
-  string tid = 3;
 }
  
 service ServiceMsgSender {

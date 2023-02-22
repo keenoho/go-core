@@ -1,6 +1,7 @@
 package core
 
 import (
+	"database/sql"
 	"database/sql/driver"
 	"fmt"
 	"time"
@@ -41,26 +42,51 @@ type SignatureInnerData struct {
 	Role    []int64 `json:"role"`
 }
 
-type EntityTime time.Time
+// entity时间
+type EntityDate time.Time
 
-func (t *EntityTime) MarshalJSON() ([]byte, error) {
-	tTime := time.Time(*t)
-	return []byte(fmt.Sprintf("%d", tTime.UnixMicro()/1e3)), nil
+func (date *EntityDate) Scan(value interface{}) (err error) {
+	nullTime := &sql.NullTime{}
+	err = nullTime.Scan(value)
+	*date = EntityDate(nullTime.Time)
+	return
 }
 
-func (t EntityTime) Value() (driver.Value, error) {
-	var zeroTime time.Time
-	tlt := time.Time(t)
-	if tlt.UnixNano() == zeroTime.UnixNano() {
+func (date EntityDate) Value() (driver.Value, error) {
+	t := time.Time(date)
+	if t.IsZero() {
 		return nil, nil
 	}
-	return tlt, nil
+	y, m, d := time.Time(date).Date()
+	return time.Date(y, m, d, 0, 0, 0, 0, time.Time(date).Location()), nil
 }
 
-func (t *EntityTime) Scan(v interface{}) error {
-	if value, ok := v.(time.Time); ok {
-		*t = EntityTime(value)
-		return nil
+// GormDataType gorm common data type
+func (date EntityDate) GormDataType() string {
+	return "timestamp"
+}
+
+func (date EntityDate) GobEncode() ([]byte, error) {
+	return time.Time(date).GobEncode()
+}
+
+func (date *EntityDate) GobDecode(b []byte) error {
+	return (*time.Time)(date).GobDecode(b)
+}
+
+func (date EntityDate) MarshalJSON() ([]byte, error) {
+	t := time.Time(date)
+	if t.IsZero() {
+		return []byte("0"), nil
 	}
-	return fmt.Errorf("can not convert %v to timestamp", v)
+	return []byte(fmt.Sprintf("%d", t.UnixMicro()/1e3)), nil
+}
+
+func (date *EntityDate) UnmarshalJSON(b []byte) error {
+	return (*time.Time)(date).UnmarshalJSON(b)
+}
+
+func (date EntityDate) GetTime() time.Time {
+	t := time.Time(date)
+	return t
 }

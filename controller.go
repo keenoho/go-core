@@ -30,7 +30,6 @@ func (c *WebController) URLMapping() {
 
 // 初始化
 func (c *WebController) Init() {
-	c.PrefixPath = ""
 	c.RouteMap = make(map[string]RouteMapStruct)
 }
 
