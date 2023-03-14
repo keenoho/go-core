@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"reflect"
+	"regexp"
 	"sort"
 	"strconv"
 	"strings"
@@ -206,4 +208,101 @@ func AddCodeStatusMap(statusMap map[int]int) {
 	for key, value := range statusMap {
 		CodeStatusMap[key] = value
 	}
+}
+
+// 字符串取正则取gorm tag
+func GetEntityColumnTag(tag string) string {
+	compileRegex := regexp.MustCompile(`column:[A-Za-z0-9-_]+`)
+	matchRes := compileRegex.FindStringSubmatch(tag)
+	if len(matchRes) < 1 {
+		return ""
+	}
+	return strings.Replace(matchRes[0], "column:", "", 1)
+}
+
+// 字符串数组中是否存在目标字符串
+func HasTargetStringInList(target string, list []string) bool {
+	sort.Strings(list)
+	index := sort.SearchStrings(list, target)
+	return index < len(list) && list[index] == target
+}
+
+/**
+ * struct转map
+ * @params:
+ * - originStruct: 待转换的struct
+ * - forceSetKeys: 必须要set的key; 默认如果当值为0或空字符串的就排除掉,如果设置该值则不会排除
+ */
+func EntityStructToMap(originStruct any, forceSetKeys ...string) map[string]any {
+	t := reflect.TypeOf(originStruct)
+	v := reflect.ValueOf(originStruct)
+	data := map[string]any{}
+	for i := 0; i < t.NumField(); i++ {
+		key := GetEntityColumnTag(t.Field(i).Tag.Get("gorm"))
+		if len(key) < 1 {
+			key = string(t.Field(i).Name)
+		}
+		value := v.Field(i).Interface()
+
+		if HasTargetStringInList(key, forceSetKeys) {
+			data[key] = value
+			continue
+		}
+
+		switch fmt.Sprint(t.Field(i).Type) {
+		case "string":
+			{
+				if len(value.(string)) > 0 {
+					data[key] = value
+				}
+				break
+			}
+		case "int":
+			{
+				if value.(int) > 0 {
+					data[key] = value
+				}
+				break
+			}
+		case "int64":
+			{
+				if value.(int64) > 0 {
+					data[key] = value
+				}
+				break
+			}
+		case "float32":
+			{
+				if value.(float32) > 0 {
+					data[key] = value
+				}
+				break
+			}
+		case "float64":
+			{
+				if value.(float64) > 0 {
+					data[key] = value
+				}
+				break
+			}
+		case "bool":
+			{
+				if value.(bool) {
+					data[key] = value
+				}
+				break
+			}
+		case "core.EntityDate":
+			{
+				t := value.(EntityDate).GetTime()
+				if t.UnixMicro() > 0 {
+					data[key] = value
+				}
+				break
+			}
+		}
+
+	}
+
+	return data
 }

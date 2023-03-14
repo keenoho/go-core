@@ -100,7 +100,7 @@ func LoggerMiddleware() gin.HandlerFunc {
 		start := time.Now()
 		ctx.Next()
 		latency := time.Since(start)
-		log.Printf("[%s][%s] %s - %d %dms %dB", ctx.ClientIP(), ctx.Request.Method, ctx.Request.URL.Path, ctx.Writer.Status(), latency.Microseconds(), ctx.Writer.Size())
+		log.Printf("[%s][%s] %s - %d %fs %dB", ctx.ClientIP(), ctx.Request.Method, ctx.Request.URL.Path, ctx.Writer.Status(), latency.Seconds(), ctx.Writer.Size())
 	}
 }
 
