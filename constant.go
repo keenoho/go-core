@@ -1,5 +1,9 @@
 package core
 
+// header
+var HEADER_APP = "x-app"
+var HEADER_SIGNATURE = "x-signature"
+
 // 签名特征
 var CTX_SIGNATURE_DATA_KEY = "signatureData"
 

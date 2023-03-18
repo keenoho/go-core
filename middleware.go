@@ -107,8 +107,8 @@ func LoggerMiddleware() gin.HandlerFunc {
 // 授权session
 func SessionMiddleware() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		headerApp := ctx.GetHeader("x-app")
-		headerSignature := ctx.GetHeader("x-signature")
+		headerApp := ctx.GetHeader(HEADER_APP)
+		headerSignature := ctx.GetHeader(HEADER_SIGNATURE)
 
 		// 检查判空,解析
 		if len(headerApp) >= 16 &&

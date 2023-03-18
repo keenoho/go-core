@@ -7,7 +7,7 @@ import (
 )
 
 // 创建webapp
-func CreateApp() *gin.Engine {
+func CreateApp(middleware ...gin.HandlerFunc) *gin.Engine {
 	conf := GetConfig()
 	if conf.Env == "production" {
 		gin.SetMode(gin.ReleaseMode)
@@ -21,6 +21,13 @@ func CreateApp() *gin.Engine {
 	app.Use(LoggerMiddleware())
 	app.Use(CorsMiddleware())
 	app.Use(SessionMiddleware())
+
+	if len(middleware) > 0 {
+		for _, m := range middleware {
+			app.Use(m)
+		}
+	}
+
 	app.NoRoute(NotFoundHandler())
 
 	return app
