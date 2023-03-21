@@ -6,8 +6,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// 创建webapp
-func CreateApp(middleware ...gin.HandlerFunc) *gin.Engine {
+// 创建web app
+func CreateApp() *gin.Engine {
 	conf := GetConfig()
 	if conf.Env == "production" {
 		gin.SetMode(gin.ReleaseMode)
@@ -21,16 +21,15 @@ func CreateApp(middleware ...gin.HandlerFunc) *gin.Engine {
 	app.Use(LoggerMiddleware())
 	app.Use(CorsMiddleware())
 	app.Use(SessionMiddleware())
-
-	if len(middleware) > 0 {
-		for _, m := range middleware {
-			app.Use(m)
-		}
-	}
-
 	app.NoRoute(NotFoundHandler())
 
 	return app
+}
+
+// 创建微服务app
+func CreateMicroServiceApp() *MicroServiceApp {
+	app := MicroServiceApp{}
+	return &app
 }
 
 // 服务启动地址

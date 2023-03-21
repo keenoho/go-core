@@ -40,16 +40,8 @@ func (c *WebController) Mapping(path string, method string, fn ControllerFunc) {
 	c.RouteMap[key] = value
 }
 
-// Controller转ginHandler
-func ControllerToHandler(controller ControllerFunc) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		data, status := controller(ctx)
-		ctx.JSON(status, data)
-	}
-}
-
 // 注册controller到gin
-func (c WebController) Resigter(app *gin.Engine) {
+func (c *WebController) Resigter(app *gin.Engine) {
 	var ginRouter *gin.RouterGroup
 	if len(c.PrefixPath) > 0 {
 		ginRouter = app.Group(c.PrefixPath)
@@ -84,5 +76,13 @@ func ResigterController(app *gin.Engine, execControllers ...WebControllerInterfa
 		execController.Init()
 		execController.URLMapping()
 		execController.Resigter(app)
+	}
+}
+
+// Controller转ginHandler
+func ControllerToHandler(controller ControllerFunc) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		data, status := controller(ctx)
+		ctx.JSON(status, data)
 	}
 }

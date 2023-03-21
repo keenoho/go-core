@@ -98,9 +98,16 @@ func CorsMiddleware() gin.HandlerFunc {
 func LoggerMiddleware() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		start := time.Now()
+		data, exist := ctx.Get(CTX_SIGNATURE_DATA_KEY)
+		var appId int64
+		var sig string
+		if exist {
+			appId = data.(SignatureData).App
+			sig = data.(SignatureData).Sig
+		}
 		ctx.Next()
 		latency := time.Since(start)
-		log.Printf("[%s][%s] %s - %d %fs %dB", ctx.ClientIP(), ctx.Request.Method, ctx.Request.URL.Path, ctx.Writer.Status(), latency.Seconds(), ctx.Writer.Size())
+		log.Printf("[%s][%s] %s - %d %s - %d %fs %dB", ctx.ClientIP(), ctx.Request.Method, ctx.Request.URL.Path, appId, sig, ctx.Writer.Status(), latency.Seconds(), ctx.Writer.Size())
 	}
 }
 
