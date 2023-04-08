@@ -8,8 +8,8 @@ type ErrorData struct {
 }
 
 type ResponseData struct {
-	Data    any    `json:"data"`
-	Code    int    `json:"code"`
-	Msg     string `json:"msg"`
-	SysTime int64  `json:"systime"`
+	Data any    `json:"data"`
+	Code int    `json:"code"`
+	Msg  string `json:"msg"`
+	Time int64  `json:"time"`
 }

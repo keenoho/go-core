@@ -8,10 +8,10 @@ func MakeResponse(args ...any) (ResponseData, int) {
 	now := time.Now()
 	status := 200
 	resData := ResponseData{
-		Data:    nil,
-		Code:    0,
-		Msg:     "ok",
-		SysTime: now.UnixMilli(),
+		Data: nil,
+		Code: 0,
+		Msg:  "ok",
+		Time: now.UnixMilli(),
 	}
 	for i, v := range args {
 		switch i {
