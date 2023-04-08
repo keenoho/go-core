@@ -1,14 +1,13 @@
-package util
+package core
 
 import (
-	core "github.com/keenoho/go-core"
 	"time"
 )
 
-func MakeResponse(args ...any) (core.ResponseData, int) {
+func MakeResponse(args ...any) (ResponseData, int) {
 	now := time.Now()
 	status := 200
-	resData := core.ResponseData{
+	resData := ResponseData{
 		Data:    nil,
 		Code:    0,
 		Msg:     "ok",

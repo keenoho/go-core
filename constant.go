@@ -1,4 +1,4 @@
-package common
+package core
 
 // response code
 var (

@@ -1,12 +1,11 @@
-package controller
+package core
 
 import (
 	"github.com/gin-gonic/gin"
-	core "github.com/keenoho/go-core"
 	"strings"
 )
 
-type AppControllerFunc func(ctx *gin.Context) (core.ResponseData, int)
+type AppControllerFunc func(ctx *gin.Context) (ResponseData, int)
 
 type AppControllerInterface interface {
 	Init()

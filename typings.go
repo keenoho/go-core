@@ -1,4 +1,4 @@
-package go_core
+package core
 
 type ErrorData struct {
 	Error  any    `json:"error"`

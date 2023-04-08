@@ -1,14 +1,12 @@
-package app
+package core
 
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/keenoho/go-core/common"
-	"github.com/keenoho/go-core/middleware"
 )
 
-func CreateServer(middlewares ...gin.HandlerFunc) *gin.Engine {
-	conf := common.GetConfig()
+func CreateApp(middlewares ...gin.HandlerFunc) *gin.Engine {
+	conf := GetConfig()
 	if conf["Env"] == "production" {
 		gin.SetMode(gin.ReleaseMode)
 	} else {
@@ -21,9 +19,9 @@ func CreateServer(middlewares ...gin.HandlerFunc) *gin.Engine {
 		app.SetTrustedProxies([]string{"*"})
 	}
 	app.Static(conf["StaticPath"], conf["StaticDir"])
-	app.Use(middleware.AppErrorMiddleware())
-	app.Use(middleware.AppLoggerMiddleware())
-	app.Use(middleware.AppCorsMiddleware())
+	app.Use(AppErrorMiddleware())
+	app.Use(AppLoggerMiddleware())
+	app.Use(AppCorsMiddleware())
 
 	if len(middlewares) > 0 {
 		for _, m := range middlewares {
@@ -31,12 +29,12 @@ func CreateServer(middlewares ...gin.HandlerFunc) *gin.Engine {
 		}
 	}
 
-	app.NoRoute(middleware.AppNotFoundMiddleware())
+	app.NoRoute(AppNotFoundMiddleware())
 
 	return app
 }
 
-func GetServerStartUpAddress() string {
-	conf := common.GetConfig()
+func GetAppStartUpAddress() string {
+	conf := GetConfig()
 	return fmt.Sprintf("%s:%s", conf["Host"], conf["Port"])
 }
