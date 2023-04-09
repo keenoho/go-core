@@ -3,6 +3,7 @@ package core
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/keenoho/go-core/microService"
 )
 
 func CreateApp(middlewares ...gin.HandlerFunc) *gin.Engine {
@@ -31,6 +32,11 @@ func CreateApp(middlewares ...gin.HandlerFunc) *gin.Engine {
 
 	app.NoRoute(AppNotFoundMiddleware())
 
+	return app
+}
+
+func CreateMicroApp() *microService.MicroService {
+	app := microService.New()
 	return app
 }
 
