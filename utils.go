@@ -39,3 +39,31 @@ func MakeResponse(args ...any) (ResponseData, int) {
 	}
 	return resData, status
 }
+
+func MakeServiceResponse(args ...any) ServiceResponseData {
+	resData := ServiceResponseData{
+		Data: nil,
+		Code: 0,
+		Msg:  "ok",
+	}
+	for i, v := range args {
+		switch i {
+		case 0:
+			{
+				resData.Data = v
+				break
+			}
+		case 1:
+			{
+				resData.Code = v.(int64)
+				break
+			}
+		case 2:
+			{
+				resData.Msg = v.(string)
+				break
+			}
+		}
+	}
+	return resData
+}

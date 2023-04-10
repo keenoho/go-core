@@ -2,8 +2,8 @@ package core
 
 import (
 	"fmt"
+
 	"github.com/gin-gonic/gin"
-	"github.com/keenoho/go-core/microService"
 )
 
 func CreateApp(middlewares ...gin.HandlerFunc) *gin.Engine {
@@ -35,8 +35,14 @@ func CreateApp(middlewares ...gin.HandlerFunc) *gin.Engine {
 	return app
 }
 
-func CreateMicroApp() *microService.MicroService {
-	app := microService.New()
+func CreateMicroApp() *MicroService {
+	conf := GetConfig()
+	if conf["Env"] == "production" {
+		SetMode(ReleaseMode)
+	} else {
+		SetMode(DebugMode)
+	}
+	app := NewMicroService()
 	return app
 }
 
