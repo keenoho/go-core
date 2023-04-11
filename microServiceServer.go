@@ -6,17 +6,17 @@ import (
 	"fmt"
 )
 
-type ServerInterface interface {
+type MicroServiceServerInterface interface {
 	UnimplementedServiceMsgHandlerServer
 	Send(ctx context.Context, in *ServiceMsgRequest) (*ServiceMsgResponse, error)
 }
 
-type Server struct {
+type MicroServiceServer struct {
 	UnimplementedServiceMsgHandlerServer
 	Service *MicroService
 }
 
-func (s *Server) Send(ctx context.Context, in *ServiceMsgRequest) (*ServiceMsgResponse, error) {
+func (s *MicroServiceServer) Send(ctx context.Context, in *ServiceMsgRequest) (*ServiceMsgResponse, error) {
 	if s.Service == nil {
 		return nil, fmt.Errorf("service is not exist")
 	}

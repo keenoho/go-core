@@ -1,8 +1,6 @@
 package core
 
 import (
-	"fmt"
-
 	"github.com/gin-gonic/gin"
 )
 
@@ -33,20 +31,4 @@ func CreateApp(middlewares ...gin.HandlerFunc) *gin.Engine {
 	app.NoRoute(AppNotFoundMiddleware())
 
 	return app
-}
-
-func CreateMicroApp() *MicroService {
-	conf := GetConfig()
-	if conf["Env"] == "production" {
-		SetMode(ReleaseMode)
-	} else {
-		SetMode(DebugMode)
-	}
-	app := NewMicroService()
-	return app
-}
-
-func GetAppStartUpAddress() string {
-	conf := GetConfig()
-	return fmt.Sprintf("%s:%s", conf["Host"], conf["Port"])
 }

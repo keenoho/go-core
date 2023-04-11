@@ -1,8 +1,19 @@
 package core
 
 import (
+	"fmt"
 	"time"
 )
+
+func GetStartUpAddress() string {
+	conf := GetConfig()
+	return fmt.Sprintf("%s:%s", conf["Host"], conf["Port"])
+}
+
+func GetRegisterAddress() string {
+	conf := GetConfig()
+	return fmt.Sprintf("%s:%s", conf["RegisterHost"], conf["RegisterPort"])
+}
 
 func MakeResponse(args ...any) (ResponseData, int) {
 	now := time.Now()
@@ -55,7 +66,7 @@ func MakeServiceResponse(args ...any) ServiceResponseData {
 			}
 		case 1:
 			{
-				resData.Code = v.(int64)
+				resData.Code = int64(v.(int))
 				break
 			}
 		case 2:

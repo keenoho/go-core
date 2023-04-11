@@ -8,14 +8,14 @@ import (
 	grpc "google.golang.org/grpc"
 )
 
-type ServiceInterface interface {
+type MicroServiceInterface interface {
 	Run(addr string)
 }
 
 type MicroService struct {
-	Server     *Server
+	Server     *MicroServiceServer
 	GrpcServer *grpc.Server
-	RouteMap   map[string]ServiceControllerFunc
+	RouteMap   map[string]MicroServiceControllerFunc
 }
 
 var DebugMode = "debug"
@@ -39,7 +39,7 @@ func (ms *MicroService) errorPrint(format string, values ...any) {
 	ms.Print("error", format, values...)
 }
 
-func (ms *MicroService) SetCustomServer(server *Server) {
+func (ms *MicroService) SetCustomServer(server *MicroServiceServer) {
 	ms.Server = server
 }
 
@@ -55,7 +55,7 @@ func (ms *MicroService) Run(addr string) error {
 		ms.GrpcServer = grpc.NewServer()
 	}
 	if ms.Server == nil {
-		server := Server{
+		server := MicroServiceServer{
 			Service: ms,
 		}
 		ms.Server = &server
@@ -72,20 +72,31 @@ func (ms *MicroService) Run(addr string) error {
 	return nil
 }
 
-func (ms *MicroService) RegisterRouteControllerFunc(key string, handler ServiceControllerFunc) {
+func (ms *MicroService) RegisterRouteControllerFunc(key string, handler MicroServiceControllerFunc) {
 	if ms.RouteMap == nil {
-		ms.RouteMap = make(map[string]ServiceControllerFunc)
+		ms.RouteMap = make(map[string]MicroServiceControllerFunc)
 	}
 	ms.RouteMap[key] = handler
 }
 
 func NewMicroService() *MicroService {
 	ms := MicroService{
-		RouteMap: make(map[string]ServiceControllerFunc),
+		RouteMap: make(map[string]MicroServiceControllerFunc),
 	}
 	return &ms
 }
 
 func SetMode(mode string) {
 	ServiceMode = mode
+}
+
+func CreateMicroApp() *MicroService {
+	conf := GetConfig()
+	if conf["Env"] == "production" {
+		SetMode(ReleaseMode)
+	} else {
+		SetMode(DebugMode)
+	}
+	app := NewMicroService()
+	return app
 }

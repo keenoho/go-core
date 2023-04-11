@@ -2,6 +2,7 @@ package core
 
 import (
 	"github.com/gin-gonic/gin"
+	"log"
 	"strings"
 )
 
@@ -32,7 +33,7 @@ func (c *AppController) Init() {
 }
 
 func (c *AppController) Mapping(path string, method string, fn AppControllerFunc) {
-	key := method + path
+	key := method + ":" + path
 	value := AppRouteMapStruct{path: path, method: method, fn: fn}
 	c.RouteMap[key] = value
 }
@@ -66,10 +67,20 @@ func (c *AppController) Register(app *gin.Engine) {
 	}
 }
 
+func (c *AppController) BindParams(ctx *gin.Context, queryBind any) {
+	if queryBind != nil {
+		err := ctx.Copy().ShouldBind(queryBind)
+		if err != nil {
+			log.Println(err)
+			panic(ErrorData{Code: CODE_PARAMS_MISSING})
+		}
+	}
+}
+
 func webControllerToHandler(controller AppControllerFunc) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		data, status := controller(ctx)
-		ctx.AbortWithStatusJSON(status, data)
+		ctx.JSON(status, data)
 	}
 }
 
