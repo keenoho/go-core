@@ -7,10 +7,7 @@ import (
 	"time"
 )
 
-type MicroServiceClient struct {
-}
-
-func (c *MicroServiceClient) Send(targetAddr string, requestData *ServiceMsgRequest) (*ServiceMsgResponse, error) {
+func MicroServiceOnceRequest(targetAddr string, requestData *ServiceMsgRequest) (*ServiceMsgResponse, error) {
 	conn, err := grpc.Dial(
 		targetAddr,
 		grpc.WithTransportCredentials(insecure.NewCredentials()))

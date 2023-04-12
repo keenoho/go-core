@@ -8,6 +8,10 @@ import (
 	grpc "google.golang.org/grpc"
 )
 
+var MicroServiceDebugMode = "debug"
+var MicroServiceReleaseMode = "release"
+var MicroServiceMode = "release"
+
 type MicroServiceInterface interface {
 	Run(addr string)
 }
@@ -18,10 +22,6 @@ type MicroService struct {
 	RouteMap   map[string]MicroServiceControllerFunc
 }
 
-var DebugMode = "debug"
-var ReleaseMode = "release"
-var ServiceMode = "release"
-
 func (ms *MicroService) Print(printType string, format string, values ...any) {
 	if !strings.HasSuffix(format, "\n") {
 		format += "\n"
@@ -30,7 +30,7 @@ func (ms *MicroService) Print(printType string, format string, values ...any) {
 }
 
 func (ms *MicroService) debugPrint(format string, values ...any) {
-	if ServiceMode == DebugMode {
+	if MicroServiceMode == MicroServiceDebugMode {
 		ms.Print("debug", format, values...)
 	}
 }
@@ -86,16 +86,16 @@ func NewMicroService() *MicroService {
 	return &ms
 }
 
-func SetMode(mode string) {
-	ServiceMode = mode
+func SetMicroServiceMode(mode string) {
+	MicroServiceMode = mode
 }
 
 func CreateMicroApp() *MicroService {
 	conf := GetConfig()
 	if conf["Env"] == "production" {
-		SetMode(ReleaseMode)
+		SetMicroServiceMode(MicroServiceReleaseMode)
 	} else {
-		SetMode(DebugMode)
+		SetMicroServiceMode(MicroServiceDebugMode)
 	}
 	app := NewMicroService()
 	return app

@@ -15,6 +15,7 @@ var configKeyMap map[string]string = map[string]string{
 	"Port":             "PORT",
 	"RegisterHost":     "REGISTER_HOST",
 	"RegisterPort":     "REGISTER_PORT",
+	"RegisterServices": "REGISTER_SERVICES",
 	"StaticDir":        "STATIC_DIR",
 	"StaticPath":       "STATIC_PATH",
 	"UploadDir":        "UPLOAD_DIR",

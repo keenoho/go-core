@@ -5,6 +5,18 @@ import (
 	"time"
 )
 
+func AddCodeMsgMap(msgMap map[int]string) {
+	for key, value := range msgMap {
+		CodeMsgMap[key] = value
+	}
+}
+
+func AddCodeStatusMap(statusMap map[int]int) {
+	for key, value := range statusMap {
+		CodeStatusMap[key] = value
+	}
+}
+
 func GetStartUpAddress() string {
 	conf := GetConfig()
 	return fmt.Sprintf("%s:%s", conf["Host"], conf["Port"])

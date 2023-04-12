@@ -20,15 +20,3 @@ var CodeStatusMap map[int]int = map[int]int{
 	CODE_PARAMS_MISSING:  400,
 	CODE_PARAMS_UNEXPECT: 400,
 }
-
-func AddCodeMsgMap(msgMap map[int]string) {
-	for key, value := range msgMap {
-		CodeMsgMap[key] = value
-	}
-}
-
-func AddCodeStatusMap(statusMap map[int]int) {
-	for key, value := range statusMap {
-		CodeStatusMap[key] = value
-	}
-}
