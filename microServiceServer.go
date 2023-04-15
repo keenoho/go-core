@@ -28,7 +28,7 @@ func (s *MicroServiceServer) Send(ctx context.Context, in *ServiceMsgRequest) (*
 	}
 	handler, isExist := s.Service.RouteMap[in.Url]
 	if !isExist {
-		return nil, fmt.Errorf("%s handler is not in routeMap", in.Url)
+		return nil, fmt.Errorf("handler is not in routeMap: %s", in.Url)
 	}
 	res := handler(ctx, in)
 	resByte, _ := json.Marshal(res.Data)

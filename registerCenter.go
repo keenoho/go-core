@@ -16,6 +16,7 @@ var RegisterCenterDebugMode = "debug"
 var RegisterCenterReleaseMode = "release"
 var RegisterCenterMode = "release"
 var RegisterCenterServicePrefixKey = "service"
+var RegisterCenterCheckHealthTime = 60 * time.Second
 var RC *RegisterCenter
 
 type RegisterCenterOption struct {
@@ -62,7 +63,7 @@ func (rc *RegisterCenter) createServiceByKv(kv *mvccpb.KeyValue) (*RegisterServi
 	content := strings.Split(key, "/")
 
 	if len(content) != 3 {
-		return nil, fmt.Errorf("the key is not a correct format, %s", key)
+		return nil, fmt.Errorf("the key is not a correct format: %s", key)
 	}
 
 	app := content[1]
@@ -87,12 +88,12 @@ func (rc *RegisterCenter) checkServiceIsInList(key string) int {
 	return -1
 }
 
-func (rc *RegisterCenter) checkServiceIsInStore(key string, option ...clientv3.OpOption) []*mvccpb.KeyValue {
+func (rc *RegisterCenter) checkServiceIsInStore(key string, option ...clientv3.OpOption) *mvccpb.KeyValue {
 	kvs, err := rc.GetKey(key, option...)
 	if err != nil || len(kvs) < 1 {
-		return kvs
+		return nil
 	}
-	return nil
+	return kvs[0]
 }
 
 func (rc *RegisterCenter) putServiceByKv(kv *mvccpb.KeyValue, saveToStore bool) {
@@ -229,6 +230,45 @@ func (rc *RegisterCenter) DeleteKey(key string, option ...clientv3.OpOption) err
 	return nil
 }
 
+func (rc *RegisterCenter) GetService(app string) (*RegisterService, error) {
+	rsList := make([]*RegisterService, 0)
+	for _, rs := range rc.RegisterServiceList {
+		if rs.App == app {
+			rsList = append(rsList, rs)
+		}
+	}
+	if len(rsList) > 0 {
+		return rsList[0], nil
+	}
+	key := fmt.Sprintf("%s/%s", RegisterCenterServicePrefixKey, app)
+	kvs, err := rc.GetKey(key, clientv3.WithPrefix())
+	if err != nil {
+		return nil, err
+	}
+	if len(kvs) < 1 {
+		return nil, fmt.Errorf("no service exist: %s", app)
+	}
+	rs, err := rc.createServiceByKv(kvs[0])
+	if err != nil {
+		return nil, err
+	}
+	return rs, nil
+}
+
+func (rc *RegisterCenter) RequestService(app string, requestData *ServiceMsgRequest) (*ServiceMsgResponse, error) {
+	rs, err := rc.GetService(app)
+	if err != nil {
+		return nil, err
+	}
+	if !rs.Health {
+		res := rs.CheckHealth()
+		if !res {
+			return nil, fmt.Errorf("service is not health: %s", app)
+		}
+	}
+	return MicroServiceClientOnceRequest(rs.Address, requestData)
+}
+
 func SetRegisterCenterMode(mode string) {
 	RegisterCenterMode = mode
 }
@@ -254,4 +294,11 @@ func LoadRegisterCenter(loadOption ...RegisterCenterOption) {
 		option: option,
 	}
 	RC.Init()
+}
+
+func RequestRegisterService(app string, requestData *ServiceMsgRequest) (*ServiceMsgResponse, error) {
+	if RC == nil || RC.Client == nil {
+		return nil, fmt.Errorf("register center is not init")
+	}
+	return RC.RequestService(app, requestData)
 }

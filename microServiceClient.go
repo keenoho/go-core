@@ -12,15 +12,10 @@ type MicroServiceClient struct {
 	Address string
 }
 
-func (c *MicroServiceClient) GetConnect() (*grpc.ClientConn, error) {
-	return grpc.Dial(
-		c.Address,
-		grpc.WithTransportCredentials(insecure.NewCredentials()),
-	)
-}
-
-func (c *MicroServiceClient) Send(address string, requestData *ServiceMsgRequest) (*ServiceMsgResponse, error) {
-	conn, err := c.GetConnect()
+func MicroServiceClientOnceRequest(targetAddr string, requestData *ServiceMsgRequest) (*ServiceMsgResponse, error) {
+	conn, err := grpc.Dial(
+		targetAddr,
+		grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		return nil, err
 	}

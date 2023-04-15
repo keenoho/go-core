@@ -2,8 +2,6 @@ package core
 
 import (
 	"fmt"
-	"log"
-	"strings"
 	"time"
 )
 
@@ -91,11 +89,4 @@ func MakeServiceResponse(args ...any) ServiceResponseData {
 		}
 	}
 	return resData
-}
-
-func PrintLog(tag string, format string, values ...any) {
-	if !strings.HasSuffix(format, "\n") {
-		format += "\n"
-	}
-	log.Printf("["+tag+"] "+format, values...)
 }

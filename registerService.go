@@ -12,5 +12,6 @@ type RegisterService struct {
 	LastCheckTime time.Time
 }
 
-func (rs *RegisterService) CheckHealth() {
+func (rs *RegisterService) CheckHealth() bool {
+	return true
 }
