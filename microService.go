@@ -1,11 +1,8 @@
 package core
 
 import (
-	"fmt"
-	"net"
-	"strings"
-
 	grpc "google.golang.org/grpc"
+	"net"
 )
 
 var MicroServiceDebugMode = "debug"
@@ -22,23 +19,6 @@ type MicroService struct {
 	RouteMap   map[string]MicroServiceControllerFunc
 }
 
-func (ms *MicroService) Print(printType string, format string, values ...any) {
-	if !strings.HasSuffix(format, "\n") {
-		format += "\n"
-	}
-	fmt.Printf("[MicroService-"+printType+"] "+format, values...)
-}
-
-func (ms *MicroService) debugPrint(format string, values ...any) {
-	if MicroServiceMode == MicroServiceDebugMode {
-		ms.Print("debug", format, values...)
-	}
-}
-
-func (ms *MicroService) errorPrint(format string, values ...any) {
-	ms.Print("error", format, values...)
-}
-
 func (ms *MicroService) SetCustomServer(server *MicroServiceServer) {
 	ms.Server = server
 }
@@ -46,7 +26,6 @@ func (ms *MicroService) SetCustomServer(server *MicroServiceServer) {
 func (ms *MicroService) Run(addr string) error {
 	lis, err := net.Listen("tcp", addr)
 	if err != nil {
-		ms.errorPrint("tcp listen error: %v", err)
 		panic(err)
 	}
 	defer lis.Close()
@@ -61,10 +40,8 @@ func (ms *MicroService) Run(addr string) error {
 		ms.Server = &server
 	}
 	RegisterServiceMsgHandlerServer(ms.GrpcServer, ms.Server)
-	ms.debugPrint("Listening and serving on %s", addr)
 	err = ms.GrpcServer.Serve(lis)
 	if err != nil {
-		ms.errorPrint("grpc serve error: %v", err)
 		panic(err)
 	}
 	defer ms.GrpcServer.Stop()
