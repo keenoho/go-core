@@ -3,6 +3,7 @@ package core
 import "time"
 
 type RegisterService struct {
+	Logger
 	Key           string
 	Value         string
 	App           string

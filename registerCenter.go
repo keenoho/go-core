@@ -25,6 +25,7 @@ type RegisterCenterOption struct {
 }
 
 type RegisterCenter struct {
+	Logger
 	Client              *clientv3.Client
 	RegisterServiceList []*RegisterService
 	option              RegisterCenterOption
@@ -76,6 +77,8 @@ func (rc *RegisterCenter) createServiceByKv(kv *mvccpb.KeyValue) (*RegisterServi
 		App:     app,
 		Id:      id,
 	}
+	rs.SetLoggerEnv(RegisterCenterMode)
+	rs.SetLoggerName("RegisterService")
 	return &rs, nil
 }
 
@@ -293,6 +296,8 @@ func LoadRegisterCenter(loadOption ...RegisterCenterOption) {
 	RC = &RegisterCenter{
 		option: option,
 	}
+	RC.SetLoggerEnv(RegisterCenterMode)
+	RC.SetLoggerName("RegisterCenter")
 	RC.Init()
 }
 

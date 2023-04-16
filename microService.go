@@ -3,6 +3,7 @@ package core
 import (
 	grpc "google.golang.org/grpc"
 	"net"
+	"reflect"
 )
 
 var MicroServiceDebugMode = "debug"
@@ -14,6 +15,7 @@ type MicroServiceInterface interface {
 }
 
 type MicroService struct {
+	Logger
 	Server     *MicroServiceServer
 	GrpcServer *grpc.Server
 	RouteMap   map[string]MicroServiceControllerFunc
@@ -37,9 +39,12 @@ func (ms *MicroService) Run(addr string) error {
 		server := MicroServiceServer{
 			Service: ms,
 		}
+		server.SetLoggerEnv(MicroServiceMode)
+		server.SetLoggerName("MicroServiceServer")
 		ms.Server = &server
 	}
 	RegisterServiceMsgHandlerServer(ms.GrpcServer, ms.Server)
+	ms.PrintDebug("Listening and serving HTTP on %s", addr)
 	err = ms.GrpcServer.Serve(lis)
 	if err != nil {
 		panic(err)
@@ -54,6 +59,10 @@ func (ms *MicroService) RegisterRouteControllerFunc(key string, handler MicroSer
 		ms.RouteMap = make(map[string]MicroServiceControllerFunc)
 	}
 	ms.RouteMap[key] = handler
+	typ := reflect.TypeOf(handler)
+	handlerName := typ.Name()
+	pkgPath := typ.PkgPath()
+	ms.PrintDebug("%s\t\t--> %v", key, pkgPath+"/"+handlerName)
 }
 
 func NewMicroService() *MicroService {
@@ -75,5 +84,7 @@ func CreateMicroApp() *MicroService {
 		SetMicroServiceMode(MicroServiceDebugMode)
 	}
 	app := NewMicroService()
+	app.SetLoggerEnv(MicroServiceMode)
+	app.SetLoggerName("MicroService")
 	return app
 }

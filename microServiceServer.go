@@ -8,11 +8,13 @@ import (
 
 type MicroServiceServerInterface interface {
 	UnimplementedServiceMsgHandlerServer
+	Logger
 	Send(ctx context.Context, in *ServiceMsgRequest) (*ServiceMsgResponse, error)
 }
 
 type MicroServiceServer struct {
 	UnimplementedServiceMsgHandlerServer
+	Logger
 	Service *MicroService
 }
 
@@ -30,8 +32,18 @@ func (s *MicroServiceServer) Send(ctx context.Context, in *ServiceMsgRequest) (*
 	if !isExist {
 		return nil, fmt.Errorf("handler is not in routeMap: %s", in.Url)
 	}
+	defer func() {
+		err := recover()
+		if err != nil {
+			s.PrintDebug("handler send error: %v", err)
+			return
+		}
+	}()
 	res := handler(ctx, in)
-	resByte, _ := json.Marshal(res.Data)
+	var resByte []byte
+	if res.Data != nil {
+		resByte, _ = json.Marshal(res.Data)
+	}
 
 	return &ServiceMsgResponse{
 		Data: resByte,
