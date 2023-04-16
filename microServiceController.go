@@ -18,6 +18,7 @@ type MicroServiceRouteMapStruct struct {
 }
 
 type MicroServiceController struct {
+	Prefix   string
 	RouteMap map[string]MicroServiceRouteMapStruct
 }
 
@@ -35,7 +36,8 @@ func (c *MicroServiceController) Mapping(path string, fn MicroServiceControllerF
 
 func (c *MicroServiceController) Register(app *MicroService) {
 	for _, handler := range c.RouteMap {
-		app.RegisterRouteControllerFunc(handler.path, handler.fn)
+		key := c.Prefix + handler.path
+		app.RegisterRouteControllerFunc(key, handler.fn)
 	}
 }
 
