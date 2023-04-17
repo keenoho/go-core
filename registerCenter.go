@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/keenoho/go-tool"
 	"github.com/keenoho/go-tool/crypto"
+	"os"
 	"strings"
 	"time"
 
@@ -22,6 +23,7 @@ var RC *RegisterCenter
 type RegisterCenterOption struct {
 	NotLoadCurrentService bool
 	CurrentServiceAddress string
+	ForceUseLocalService  bool
 }
 
 type RegisterCenter struct {
@@ -54,6 +56,9 @@ func (rc *RegisterCenter) Init() {
 	// init current service
 	rc.loadCurrentService()
 
+	for _, v := range rc.RegisterServiceList {
+		rc.PrintDebug("%s\t\t\t--> %s", v.Key, v.Value)
+	}
 	// watch service change from store
 	rc.watchServiceChange()
 }
@@ -127,6 +132,23 @@ func (rc *RegisterCenter) deleteServiceByKv(kv *mvccpb.KeyValue, saveToStore boo
 }
 
 func (rc *RegisterCenter) initExistingService() {
+	if rc.option.ForceUseLocalService {
+		val := os.Getenv("FORCE_LOCAL_SERVICE")
+		arr := strings.Split(val, ",")
+		for _, s := range arr {
+			nameIp := strings.Split(s, "=")
+			if len(nameIp) == 2 {
+				app := nameIp[0]
+				ip := nameIp[1]
+				kv := mvccpb.KeyValue{
+					Key:   []byte(fmt.Sprintf("%s/%s/%s", RegisterCenterServicePrefixKey, app, "local")),
+					Value: []byte(ip),
+				}
+				rc.putServiceByKv(&kv, false)
+			}
+		}
+		return
+	}
 	kvs, err := rc.GetKey(RegisterCenterServicePrefixKey+"/", clientv3.WithPrefix())
 	if err != nil {
 		panic(err)
@@ -137,6 +159,9 @@ func (rc *RegisterCenter) initExistingService() {
 }
 
 func (rc *RegisterCenter) loadCurrentService() {
+	if rc.option.ForceUseLocalService {
+		return
+	}
 	conf := GetConfig()
 	if rc.option.NotLoadCurrentService {
 		return
@@ -191,6 +216,9 @@ func (rc *RegisterCenter) loadCurrentService() {
 }
 
 func (rc *RegisterCenter) watchServiceChange() {
+	if rc.option.ForceUseLocalService {
+		return
+	}
 	rc.WatchKey(RegisterCenterServicePrefixKey+"/", func(even *clientv3.Event) {
 		if even.Type.String() == "PUT" {
 			rc.putServiceByKv(even.Kv, false)
@@ -291,7 +319,11 @@ func LoadRegisterCenter(loadOption ...RegisterCenterOption) {
 		for _, o := range loadOption {
 			option.NotLoadCurrentService = o.NotLoadCurrentService
 			option.CurrentServiceAddress = o.CurrentServiceAddress
+			option.ForceUseLocalService = o.ForceUseLocalService
 		}
+	}
+	if conf["Env"] == "local" && len(conf["FORCE_LOCAL_SERVICE"]) > 1 {
+		option.ForceUseLocalService = true
 	}
 	RC = &RegisterCenter{
 		option: option,
