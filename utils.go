@@ -33,7 +33,7 @@ func MakeResponse(args ...any) (ResponseData, int) {
 	resData := ResponseData{
 		Data: nil,
 		Code: 0,
-		Msg:  "ok",
+		Msg:  "",
 		Time: now.UnixMilli(),
 	}
 	for i, v := range args {
@@ -60,6 +60,14 @@ func MakeResponse(args ...any) (ResponseData, int) {
 			}
 		}
 	}
+	if resData.Code > 0 && resData.Msg == "" {
+		msg, isExist := CodeMsgMap[resData.Code]
+		if isExist && msg != "" {
+			resData.Msg = msg
+		} else {
+			msg = "ok"
+		}
+	}
 	return resData, status
 }
 
@@ -67,7 +75,7 @@ func MakeServiceResponse(args ...any) ServiceResponseData {
 	resData := ServiceResponseData{
 		Data: nil,
 		Code: 0,
-		Msg:  "ok",
+		Msg:  "",
 	}
 	for i, v := range args {
 		switch i {
@@ -86,6 +94,14 @@ func MakeServiceResponse(args ...any) ServiceResponseData {
 				resData.Msg = v.(string)
 				break
 			}
+		}
+	}
+	if resData.Code > 0 && resData.Msg == "" {
+		msg, isExist := CodeMsgMap[int(resData.Code)]
+		if isExist && msg != "" {
+			resData.Msg = msg
+		} else {
+			msg = "ok"
 		}
 	}
 	return resData
