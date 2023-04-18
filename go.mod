@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	github.com/gin-gonic/gin v1.8.1
-	github.com/keenoho/go-tool v0.0.1
+	github.com/keenoho/go-tool v0.0.2
 	go.etcd.io/etcd/api/v3 v3.5.7
 	go.etcd.io/etcd/client/v3 v3.5.7
 	google.golang.org/grpc v1.52.0
