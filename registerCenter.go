@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/keenoho/go-tool"
 	"github.com/keenoho/go-tool/crypto"
-	"os"
 	"strings"
 	"time"
 
@@ -23,7 +22,7 @@ var RC *RegisterCenter
 type RegisterCenterOption struct {
 	NotLoadCurrentService bool
 	CurrentServiceAddress string
-	ForceUseLocalService  bool
+	InjectServices        map[string]string
 }
 
 type RegisterCenter struct {
@@ -132,20 +131,15 @@ func (rc *RegisterCenter) deleteServiceByKv(kv *mvccpb.KeyValue, saveToStore boo
 }
 
 func (rc *RegisterCenter) initExistingService() {
-	if rc.option.ForceUseLocalService {
-		val := os.Getenv("FORCE_LOCAL_SERVICE")
-		arr := strings.Split(val, ",")
-		for _, s := range arr {
-			nameIp := strings.Split(s, "=")
-			if len(nameIp) == 2 {
-				app := nameIp[0]
-				ip := nameIp[1]
-				kv := mvccpb.KeyValue{
-					Key:   []byte(fmt.Sprintf("%s/%s/%s", RegisterCenterServicePrefixKey, app, "local")),
-					Value: []byte(ip),
-				}
-				rc.putServiceByKv(&kv, false)
+	if rc.option.InjectServices != nil {
+		for k, v := range rc.option.InjectServices {
+			app := k
+			ip := v
+			kv := mvccpb.KeyValue{
+				Key:   []byte(fmt.Sprintf("%s/%s/%s", RegisterCenterServicePrefixKey, app, "local")),
+				Value: []byte(ip),
 			}
+			rc.putServiceByKv(&kv, false)
 		}
 		return
 	}
@@ -159,7 +153,7 @@ func (rc *RegisterCenter) initExistingService() {
 }
 
 func (rc *RegisterCenter) loadCurrentService() {
-	if rc.option.ForceUseLocalService {
+	if rc.option.InjectServices != nil {
 		return
 	}
 	conf := GetConfig()
@@ -216,7 +210,7 @@ func (rc *RegisterCenter) loadCurrentService() {
 }
 
 func (rc *RegisterCenter) watchServiceChange() {
-	if rc.option.ForceUseLocalService {
+	if rc.option.InjectServices != nil {
 		return
 	}
 	rc.WatchKey(RegisterCenterServicePrefixKey+"/", func(even *clientv3.Event) {
@@ -319,11 +313,8 @@ func LoadRegisterCenter(loadOption ...RegisterCenterOption) {
 		for _, o := range loadOption {
 			option.NotLoadCurrentService = o.NotLoadCurrentService
 			option.CurrentServiceAddress = o.CurrentServiceAddress
-			option.ForceUseLocalService = o.ForceUseLocalService
+			option.InjectServices = o.InjectServices
 		}
-	}
-	if conf["Env"] == "local" && len(conf["FORCE_LOCAL_SERVICE"]) > 1 {
-		option.ForceUseLocalService = true
 	}
 	RC = &RegisterCenter{
 		option: option,
