@@ -9,7 +9,7 @@ import (
 
 type EntityDate time.Time
 
-func (date *EntityDate) Scan(value interface{}) (err error) {
+func (date *EntityDate) Scan(value any) (err error) {
 	nullTime := &sql.NullTime{}
 	err = nullTime.Scan(value)
 	*date = EntityDate(nullTime.Time)
@@ -22,7 +22,7 @@ func (date EntityDate) Value() (driver.Value, error) {
 		return nil, nil
 	}
 	y, m, d := time.Time(date).Date()
-	return time.Date(y, m, d, 0, 0, 0, 0, time.Time(date).Location()), nil
+	return time.Date(y, m, d, t.Hour(), t.Minute(), t.Second(), t.Nanosecond(), time.Time(date).Location()), nil
 }
 
 // GormDataType gorm common data type
