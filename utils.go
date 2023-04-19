@@ -33,7 +33,7 @@ func MakeResponse(args ...any) (ResponseData, int) {
 	resData := ResponseData{
 		Data: nil,
 		Code: 0,
-		Msg:  "",
+		Msg:  "ok",
 		Time: now.UnixMilli(),
 	}
 	for i, v := range args {
@@ -46,6 +46,14 @@ func MakeResponse(args ...any) (ResponseData, int) {
 		case 1:
 			{
 				resData.Code = v.(int)
+				msg, isExist := CodeMsgMap[resData.Code]
+				if isExist {
+					resData.Msg = msg
+				}
+				stu, isExist := CodeStatusMap[resData.Code]
+				if isExist {
+					status = stu
+				}
 				break
 			}
 		case 2:
@@ -60,14 +68,6 @@ func MakeResponse(args ...any) (ResponseData, int) {
 			}
 		}
 	}
-	if resData.Code > 0 && resData.Msg == "" {
-		msg, isExist := CodeMsgMap[resData.Code]
-		if isExist && msg != "" {
-			resData.Msg = msg
-		} else {
-			msg = "ok"
-		}
-	}
 	return resData, status
 }
 
@@ -75,7 +75,7 @@ func MakeServiceResponse(args ...any) ServiceResponseData {
 	resData := ServiceResponseData{
 		Data: nil,
 		Code: 0,
-		Msg:  "",
+		Msg:  "ok",
 	}
 	for i, v := range args {
 		switch i {
@@ -87,6 +87,10 @@ func MakeServiceResponse(args ...any) ServiceResponseData {
 		case 1:
 			{
 				resData.Code = int64(v.(int))
+				msg, isExist := CodeMsgMap[int(resData.Code)]
+				if isExist {
+					resData.Msg = msg
+				}
 				break
 			}
 		case 2:
@@ -94,14 +98,6 @@ func MakeServiceResponse(args ...any) ServiceResponseData {
 				resData.Msg = v.(string)
 				break
 			}
-		}
-	}
-	if resData.Code > 0 && resData.Msg == "" {
-		msg, isExist := CodeMsgMap[int(resData.Code)]
-		if isExist && msg != "" {
-			resData.Msg = msg
-		} else {
-			msg = "ok"
 		}
 	}
 	return resData
