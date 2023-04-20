@@ -42,9 +42,9 @@ func GetRedisConnect() redis.Conn {
 	return conn
 }
 
-func RedisExec(params ...any) (reply interface{}, err error) {
+func RedisExec(cmd string, params ...any) (reply interface{}, err error) {
 	conn := Redis.Get()
-	reply, err = conn.Do("set", params...)
+	reply, err = conn.Do(cmd, params...)
 	conn.Close()
 	return reply, err
 }
