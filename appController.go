@@ -1,9 +1,10 @@
 package core
 
 import (
-	"github.com/gin-gonic/gin"
 	"log"
 	"strings"
+
+	"github.com/gin-gonic/gin"
 )
 
 type AppControllerFunc func(ctx *gin.Context) (ResponseData, int)
@@ -80,6 +81,7 @@ func (c *AppController) BindParams(ctx *gin.Context, queryBind any) {
 func webControllerToHandler(controller AppControllerFunc) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		data, status := controller(ctx)
+		ctx.Header("Cache-Control", "no-cache")
 		ctx.JSON(status, data)
 	}
 }
