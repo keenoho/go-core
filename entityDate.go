@@ -18,7 +18,7 @@ func (date *EntityDate) Scan(value any) (err error) {
 
 func (date EntityDate) Value() (driver.Value, error) {
 	t := time.Time(date)
-	if t.IsZero() {
+	if t.IsZero() || t.UnixMicro() == 0 {
 		return nil, nil
 	}
 	y, m, d := time.Time(date).Date()
@@ -47,7 +47,8 @@ func (date EntityDate) MarshalJSON() ([]byte, error) {
 }
 
 func (date *EntityDate) UnmarshalJSON(b []byte) error {
-	return (*time.Time)(date).UnmarshalJSON(b)
+	return nil
+	// return (*time.Time)(date).UnmarshalJSON(b)
 }
 
 func (date EntityDate) GetTime() time.Time {
