@@ -14,8 +14,10 @@ var Db *gorm.DB
 
 func LoadDb() {
 	conf := GetConfig()
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true&loc=%s", conf["DbUsername"], conf["DbPassword"], conf["DbHost"], conf["DbPort"], conf["DbDatabase"], "Asia%2fShanghai")
-
+	dsn := conf["DbDsn"]
+	if len(dsn) < 1 {
+		dsn = fmt.Sprintf("%s:%s@tcp(%s:%s)/%s%s", conf["DbUsername"], conf["DbPassword"], conf["DbHost"], conf["DbPort"], conf["DbDatabase"], conf["DbDsnAppend"])
+	}
 	mysqlDb := mysql.Open(dsn)
 	ormConfig := gorm.Config{}
 	if conf["Env"] == "production" {

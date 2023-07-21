@@ -2,8 +2,9 @@ package core
 
 import (
 	"flag"
-	"github.com/joho/godotenv"
 	"os"
+
+	"github.com/joho/godotenv"
 )
 
 var configKeyMap map[string]string = map[string]string{
@@ -29,6 +30,8 @@ var configKeyMap map[string]string = map[string]string{
 	"DbHost":           "DB_HOST",
 	"DbPort":           "DB_PORT",
 	"DbMode":           "DB_MODE",
+	"DbDsn":            "DB_DSN",
+	"DbDsnAppend":      "DB_DSN_APPEND",
 	"RedisDatabase":    "REDIS_DATABASE",
 	"RedisPassword":    "REDIS_PASSWORD",
 	"RedisHost":        "REDIS_HOST",
