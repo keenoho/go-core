@@ -9,14 +9,14 @@ import (
 	"github.com/gomodule/redigo/redis"
 )
 
-var Redis redis.Pool
+var Redis *redis.Pool
 
 func LoadRedis() {
 	conf := GetConfig()
 	address := fmt.Sprintf("%s:%s", conf["RedisHost"], conf["RedisPort"])
 	db, _ := strconv.Atoi(conf["RedisDatabase"])
 
-	Redis = redis.Pool{
+	Redis = &redis.Pool{
 		MaxIdle:   2,    // 空闲链接数
 		MaxActive: 5000, // 最大链接数
 		Dial: func() (redis.Conn, error) {
