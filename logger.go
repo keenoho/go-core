@@ -37,9 +37,7 @@ func (l *Logger) PrintInfo(format string, values ...any) {
 }
 
 func (l *Logger) PrintDebug(format string, values ...any) {
-	if l.Env != "release" {
-		l.PrintLog("debug", format, values...)
-	}
+	l.PrintLog("debug", format, values...)
 }
 
 func (l *Logger) PrintError(format string, values ...any) {
