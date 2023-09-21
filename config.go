@@ -16,7 +16,6 @@ var configKeyMap map[string]string = map[string]string{
 	"Port":             "PORT",
 	"RegisterHost":     "REGISTER_HOST",
 	"RegisterPort":     "REGISTER_PORT",
-	"RegisterServices": "REGISTER_SERVICES",
 	"StaticDir":        "STATIC_DIR",
 	"StaticPath":       "STATIC_PATH",
 	"UploadDir":        "UPLOAD_DIR",
@@ -37,8 +36,6 @@ var configKeyMap map[string]string = map[string]string{
 	"RedisHost":        "REDIS_HOST",
 	"RedisPort":        "REDIS_PORT",
 	"RedisMode":        "REDIS_MODE",
-	"InternalIp":       "INTERNAL_IP",
-	"PublicIp":         "PUBLIC_IP",
 }
 
 var cacheConfig map[string]string = nil

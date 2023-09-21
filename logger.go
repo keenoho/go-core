@@ -13,16 +13,16 @@ type LoggerInterface interface {
 }
 
 type Logger struct {
-	Name string
-	Env  string
+	Name  string
+	Level string
 }
 
 func (l *Logger) SetLoggerName(name string) {
 	l.Name = name
 }
 
-func (l *Logger) SetLoggerEnv(env string) {
-	l.Env = env
+func (l *Logger) SetLoggerLevel(level string) {
+	l.Level = level
 }
 
 func (l *Logger) PrintLog(tag string, format string, values ...any) {

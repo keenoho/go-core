@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option go_package = "./;core";
+option go_package = "./;service";
  
 message ServiceMsgRequest {
   string url = 1;
@@ -9,8 +9,8 @@ message ServiceMsgRequest {
 
 message ServiceMsgResponse {
   int64 code = 1;
-  string msg = 2;
-  bytes data = 3;
+  bytes data = 2;
+  string msg = 3;
 }
  
 service ServiceMsgHandler {

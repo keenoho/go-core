@@ -13,9 +13,3 @@ type ResponseData struct {
 	Msg  string `json:"msg"`
 	Time int64  `json:"time"`
 }
-
-type ServiceResponseData struct {
-	Data any    `json:"data"`
-	Code int64  `json:"code"`
-	Msg  string `json:"msg"`
-}

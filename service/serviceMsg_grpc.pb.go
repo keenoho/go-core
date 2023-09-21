@@ -4,7 +4,7 @@
 // - protoc             v3.21.9
 // source: serviceMsg.proto
 
-package core
+package service
 
 import (
 	context "context"

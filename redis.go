@@ -17,8 +17,8 @@ func LoadRedis() {
 	db, _ := strconv.Atoi(conf["RedisDatabase"])
 
 	Redis = &redis.Pool{
-		MaxIdle:   2,    // 空闲链接数
-		MaxActive: 5000, // 最大链接数
+		MaxIdle:   2,    // idle connect num
+		MaxActive: 5000, // max connect num
 		Dial: func() (redis.Conn, error) {
 			return redis.Dial("tcp", address, redis.DialPassword(conf["RedisPassword"]), redis.DialDatabase(db), redis.DialWriteTimeout(10*time.Second), redis.DialReadTimeout(10*time.Second))
 		},

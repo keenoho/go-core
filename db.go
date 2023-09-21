@@ -33,8 +33,8 @@ func LoadDb() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	sqlDB.SetMaxIdleConns(2)    // 空闲链接数
-	sqlDB.SetMaxOpenConns(5000) // 最大链接数
+	sqlDB.SetMaxIdleConns(2)   // idle connect num
+	sqlDB.SetMaxOpenConns(300) // max connect num
 	sqlDB.SetConnMaxLifetime(time.Hour)
 	Db = linkDb
 	testDbConnect()

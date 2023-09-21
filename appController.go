@@ -1,7 +1,6 @@
 package core
 
 import (
-	"log"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -72,7 +71,6 @@ func (c *AppController) BindParams(ctx *gin.Context, queryBind any) {
 	if queryBind != nil {
 		err := ctx.Copy().ShouldBind(queryBind)
 		if err != nil {
-			log.Println(err)
 			panic(ErrorData{Code: CODE_PARAMS_MISSING})
 		}
 	}

@@ -58,47 +58,19 @@ func MakeResponse(args ...any) (ResponseData, int) {
 			}
 		case 2:
 			{
-				resData.Msg = v.(string)
+				if len(v.(string)) > 0 {
+					resData.Msg = v.(string)
+				}
 				break
 			}
 		case 3:
 			{
-				status = v.(int)
+				if v.(int) > 0 {
+					status = v.(int)
+				}
 				break
 			}
 		}
 	}
 	return resData, status
-}
-
-func MakeServiceResponse(args ...any) ServiceResponseData {
-	resData := ServiceResponseData{
-		Data: nil,
-		Code: 0,
-		Msg:  "ok",
-	}
-	for i, v := range args {
-		switch i {
-		case 0:
-			{
-				resData.Data = v
-				break
-			}
-		case 1:
-			{
-				resData.Code = int64(v.(int))
-				msg, isExist := CodeMsgMap[int(resData.Code)]
-				if isExist {
-					resData.Msg = msg
-				}
-				break
-			}
-		case 2:
-			{
-				resData.Msg = v.(string)
-				break
-			}
-		}
-	}
-	return resData
 }

@@ -1,9 +1,12 @@
 package service
 
-import "github.com/keenoho/go-core"
+import (
+	"encoding/json"
 
-func MakeResponse(args ...any) (ResponseData, bool) {
-	toJsonString := true
+	"github.com/keenoho/go-core"
+)
+
+func MakeResponse(args ...any) ResponseData {
 	resData := ResponseData{
 		Data: nil,
 		Code: 0,
@@ -27,10 +30,17 @@ func MakeResponse(args ...any) (ResponseData, bool) {
 			}
 		case 2:
 			{
-				resData.Msg = v.(string)
+				if len(v.(string)) > 0 {
+					resData.Msg = v.(string)
+				}
 				break
 			}
 		}
 	}
-	return resData, toJsonString
+	return resData
+}
+
+func DataToBytes(data any) ([]byte, error) {
+	dataByte, err := json.Marshal(data)
+	return dataByte, err
 }

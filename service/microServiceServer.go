@@ -2,8 +2,8 @@ package service
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
+
 	"github.com/keenoho/go-core"
 )
 
@@ -16,7 +16,6 @@ type MicroServiceServerInterface interface {
 type MicroServiceServer struct {
 	UnimplementedServiceMsgHandlerServer
 	core.Logger
-	Mode    string
 	Service *MicroService
 }
 
@@ -32,23 +31,35 @@ func (s *MicroServiceServer) Send(ctx context.Context, in *ServiceMsgRequest) (*
 	}
 	handler, isExist := s.Service.RouteMap[in.Url]
 	if !isExist {
-		return nil, fmt.Errorf("handler is not in routeMap: %s", in.Url)
+		return nil, fmt.Errorf("handler is not in routeMap: %v", in.Url)
 	}
 	defer func() {
 		err := recover()
 		if err != nil {
-			s.PrintDebug("handler send error: %v", err)
+			s.PrintError("handler send error: %v", err)
 			return
 		}
 	}()
-	res := handler(ctx, in)
-	var resByte []byte
-	if res.Data != nil {
-		resByte, _ = json.Marshal(res.Data)
+
+	// create context
+	serviceContext := MicroServiceContext{
+		ConnectContext: &ctx,
+		RequestIn:      in,
 	}
 
+	// call middlewares
+	if len(s.Service.MiddlewareList) > 0 {
+		for _, middleware := range s.Service.MiddlewareList {
+			middleware(&serviceContext)
+		}
+	}
+
+	// call handler
+	res := handler(&serviceContext)
+	dataByte, _ := DataToBytes(res.Data)
+
 	return &ServiceMsgResponse{
-		Data: resByte,
+		Data: dataByte,
 		Code: int64(res.Code),
 		Msg:  res.Msg,
 	}, nil
