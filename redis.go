@@ -66,3 +66,10 @@ func RedisGet(key string) (reply interface{}, err error) {
 	conn.Close()
 	return reply, err
 }
+
+func RedisDelete(key string) (reply interface{}, err error) {
+	conn := Redis.Get()
+	reply, err = conn.Do("del", key)
+	conn.Close()
+	return reply, err
+}
