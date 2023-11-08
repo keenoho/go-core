@@ -1,3 +1,3 @@
 # go-core
 
-Some framework code for keenoho go project
+The core package for keenoho go project.
