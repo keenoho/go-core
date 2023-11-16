@@ -1,7 +1,7 @@
 package core
 
 import (
-	"fmt"
+	"log"
 	"strings"
 )
 
@@ -29,7 +29,7 @@ func (l *Logger) PrintLog(tag string, format string, values ...any) {
 	if !strings.HasSuffix(format, "\n") {
 		format += "\n"
 	}
-	fmt.Printf("["+l.Name+" "+tag+"] "+format, values...)
+	log.Printf("["+l.Name+" "+tag+"] "+format, values...)
 }
 
 func (l *Logger) PrintInfo(format string, values ...any) {

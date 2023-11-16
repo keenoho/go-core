@@ -3,23 +3,19 @@ package service
 import (
 	"context"
 	"fmt"
-
-	"github.com/keenoho/go-core"
 )
 
 type MicroServiceServerInterface interface {
-	UnimplementedServiceMsgHandlerServer
-	core.Logger
-	Send(ctx context.Context, in *ServiceMsgRequest) (*ServiceMsgResponse, error)
+	UnimplementedServiceHandlerServer
+	Send(ctx context.Context, in *ServiceRequest) (*ServiceResponse, error)
 }
 
 type MicroServiceServer struct {
-	UnimplementedServiceMsgHandlerServer
-	core.Logger
+	UnimplementedServiceHandlerServer
 	Service *MicroService
 }
 
-func (s *MicroServiceServer) Send(ctx context.Context, in *ServiceMsgRequest) (*ServiceMsgResponse, error) {
+func (s *MicroServiceServer) Send(ctx context.Context, in *ServiceRequest) (*ServiceResponse, error) {
 	if s.Service == nil {
 		return nil, fmt.Errorf("service is not exist")
 	}
@@ -36,7 +32,6 @@ func (s *MicroServiceServer) Send(ctx context.Context, in *ServiceMsgRequest) (*
 	defer func() {
 		err := recover()
 		if err != nil {
-			s.PrintError("handler send error: %v", err)
 			return
 		}
 	}()
@@ -45,6 +40,7 @@ func (s *MicroServiceServer) Send(ctx context.Context, in *ServiceMsgRequest) (*
 	serviceContext := MicroServiceContext{
 		ConnectContext: &ctx,
 		RequestIn:      in,
+		ContextData:    map[string]any{},
 	}
 
 	// call middlewares
@@ -56,10 +52,9 @@ func (s *MicroServiceServer) Send(ctx context.Context, in *ServiceMsgRequest) (*
 
 	// call handler
 	res := handler(&serviceContext)
-	dataByte, _ := DataToBytes(res.Data)
 
-	return &ServiceMsgResponse{
-		Data: dataByte,
+	return &ServiceResponse{
+		Data: res.Data,
 		Code: int64(res.Code),
 		Msg:  res.Msg,
 	}, nil

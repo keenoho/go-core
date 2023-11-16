@@ -1,7 +1,7 @@
 package service
 
 type ResponseData struct {
-	Data any    `json:"data"`
+	Data []byte `json:"data"`
 	Code int    `json:"code"`
 	Msg  string `json:"msg"`
 }
