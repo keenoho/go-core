@@ -2,6 +2,7 @@ package core
 
 import (
 	"fmt"
+	"strconv"
 	"time"
 )
 
@@ -27,6 +28,9 @@ func GetRegisterAddress() string {
 	return fmt.Sprintf("%s:%s", conf["RegisterHost"], conf["RegisterPort"])
 }
 
+/**
+ * @params: data any, code int, msg string, status int
+ **/
 func MakeResponse(args ...any) (ResponseData, int) {
 	now := time.Now()
 	status := 200
@@ -45,28 +49,51 @@ func MakeResponse(args ...any) (ResponseData, int) {
 			}
 		case 1:
 			{
-				resData.Code = v.(int)
-				msg, isExist := CodeMsgMap[resData.Code]
-				if isExist {
-					resData.Msg = msg
+				codeValue, _ := v.(int)
+				errValue, isErr := v.(error)
+
+				if isErr {
+					val, err := strconv.Atoi(errValue.Error())
+					if err == nil {
+						codeValue = val
+					} else {
+						resData.Msg = errValue.Error()
+					}
 				}
-				stu, isExist := CodeStatusMap[resData.Code]
-				if isExist {
-					status = stu
+
+				if codeValue > 0 {
+					resData.Code = codeValue
+					msg, isExist := CodeMsgMap[resData.Code]
+					if isExist {
+						resData.Msg = msg
+					}
+					stu, isExist := CodeStatusMap[resData.Code]
+					if isExist {
+						status = stu
+					}
 				}
 				break
 			}
 		case 2:
 			{
-				if len(v.(string)) > 0 {
-					resData.Msg = v.(string)
+				msgValue, _ := v.(string)
+				errValue, isErr := v.(error)
+
+				if isErr {
+					msgValue = errValue.Error()
+				}
+
+				if len(msgValue) > 0 {
+					resData.Msg = msgValue
 				}
 				break
 			}
 		case 3:
 			{
-				if v.(int) > 0 {
-					status = v.(int)
+				statusValue, isInt := v.(int)
+
+				if isInt {
+					status = statusValue
 				}
 				break
 			}
