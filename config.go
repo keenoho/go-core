@@ -57,6 +57,8 @@ func GetConfig(keys ...string) map[string]string {
 			envKey, isExist := configKeyMap[k]
 			if isExist {
 				conf[k] = os.Getenv(envKey)
+			} else {
+				conf[k] = os.Getenv(k)
 			}
 		}
 		return conf
@@ -69,6 +71,23 @@ func GetConfig(keys ...string) map[string]string {
 		}
 		return cacheConfig
 	}
+}
+
+func GetOneConfig(key string) string {
+	if cacheConfig != nil {
+		val, isExist := cacheConfig[key]
+		if isExist {
+			return val
+		}
+	} else {
+		envKey, isExist := configKeyMap[key]
+		if isExist {
+			return os.Getenv(envKey)
+		} else {
+			return os.Getenv(key)
+		}
+	}
+	return ""
 }
 
 func SetConfig(configKey string, envKey string, value string) {
