@@ -7,5 +7,3 @@ type ResponseData struct {
 }
 
 type MicroServiceControllerFunc func(ctx *MicroServiceContext) ResponseData
-
-type MicroServiceMiddleware func(ctx *MicroServiceContext)

@@ -12,10 +12,9 @@ type MicroServiceInterface interface {
 }
 
 type MicroService struct {
-	Server         *MicroServiceServer
-	GrpcServer     *grpc.Server
-	RouteMap       map[string]MicroServiceControllerFunc
-	MiddlewareList []MicroServiceMiddleware
+	Server     *MicroServiceServer
+	GrpcServer *grpc.Server
+	RouteMap   map[string]MicroServiceControllerFunc
 }
 
 func (ms *MicroService) RegisterRouteControllerFunc(key string, handler MicroServiceControllerFunc) {
@@ -23,17 +22,6 @@ func (ms *MicroService) RegisterRouteControllerFunc(key string, handler MicroSer
 		ms.RouteMap = make(map[string]MicroServiceControllerFunc)
 	}
 	ms.RouteMap[key] = handler
-}
-
-func (ms *MicroService) Use(middlewares ...MicroServiceMiddleware) {
-	if ms.MiddlewareList == nil {
-		ms.MiddlewareList = []MicroServiceMiddleware{}
-	}
-	if len(middlewares) > 0 {
-		for i := 0; i < len(middlewares); i++ {
-			ms.MiddlewareList = append(ms.MiddlewareList, middlewares[i])
-		}
-	}
 }
 
 func (ms *MicroService) Run(addr string) error {

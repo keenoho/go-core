@@ -43,13 +43,6 @@ func (s *MicroServiceServer) Send(ctx context.Context, in *ServiceRequest) (*Ser
 		ContextData:    map[string]any{},
 	}
 
-	// call middlewares
-	if len(s.Service.MiddlewareList) > 0 {
-		for _, middleware := range s.Service.MiddlewareList {
-			middleware(&serviceContext)
-		}
-	}
-
 	// call handler
 	res := handler(&serviceContext)
 
@@ -59,3 +52,7 @@ func (s *MicroServiceServer) Send(ctx context.Context, in *ServiceRequest) (*Ser
 		Msg:  res.Msg,
 	}, nil
 }
+
+// func (s *MicroServiceServer) StreamSend(serviceHandler ServiceHandler_StreamSendServer) error {
+// 	return nil
+// }

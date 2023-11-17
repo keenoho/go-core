@@ -7,20 +7,6 @@ import (
 	"github.com/keenoho/go-core"
 )
 
-func CreateServiceApp(middlewares ...MicroServiceMiddleware) *MicroService {
-	app := &MicroService{
-		RouteMap: make(map[string]MicroServiceControllerFunc),
-	}
-
-	if len(middlewares) > 0 {
-		for _, m := range middlewares {
-			app.Use(m)
-		}
-	}
-
-	return app
-}
-
 /**
  * @params: data bytes, code int, msg string
  **/
@@ -81,4 +67,12 @@ func MakeResponse(args ...any) ResponseData {
 		}
 	}
 	return resData
+}
+
+func CreateServiceApp() *MicroService {
+	app := &MicroService{
+		RouteMap: make(map[string]MicroServiceControllerFunc),
+	}
+
+	return app
 }
