@@ -76,3 +76,5 @@ func CreateServiceApp() *MicroService {
 
 	return app
 }
+
+func LoadServiceRegister() {}
