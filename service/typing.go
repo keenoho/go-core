@@ -5,5 +5,3 @@ type ResponseData struct {
 	Code int    `json:"code"`
 	Msg  string `json:"msg"`
 }
-
-type MicroServiceControllerFunc func(ctx *MicroServiceContext) ResponseData

@@ -6,6 +6,8 @@ type MicroServiceContextInterface interface {
 }
 
 type MicroServiceContext struct {
+	Service        *MicroService
+	ServiceServer  *MicroServiceServer
 	ConnectContext *context.Context
 	RequestIn      *ServiceRequest
 	ContextData    map[string]any

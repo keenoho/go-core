@@ -38,6 +38,8 @@ func (s *MicroServiceServer) Send(ctx context.Context, in *ServiceRequest) (*Ser
 
 	// create context
 	serviceContext := MicroServiceContext{
+		Service:        s.Service,
+		ServiceServer:  s,
 		ConnectContext: &ctx,
 		RequestIn:      in,
 		ContextData:    map[string]any{},

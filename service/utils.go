@@ -68,13 +68,3 @@ func MakeResponse(args ...any) ResponseData {
 	}
 	return resData
 }
-
-func CreateServiceApp() *MicroService {
-	app := &MicroService{
-		RouteMap: make(map[string]MicroServiceControllerFunc),
-	}
-
-	return app
-}
-
-func LoadServiceRegister() {}

@@ -6,6 +6,8 @@ import (
 	"github.com/keenoho/go-core"
 )
 
+type MicroServiceControllerFunc func(ctx *MicroServiceContext) ResponseData
+
 type MicroServiceControllerInterface interface {
 	Init()
 	URLMapping()
@@ -46,6 +48,10 @@ func (c *MicroServiceController) BindJson(ctx *MicroServiceContext, paramsBind a
 	if err != nil {
 		panic(core.ErrorData{Code: core.CODE_PARAMS_MISSING})
 	}
+}
+
+func (c *MicroServiceController) RequestToService(serviceName string, url string, data any) {
+
 }
 
 func RegisterMicroServiceController(ms *MicroService, execControllers ...MicroServiceControllerInterface) {
