@@ -12,13 +12,12 @@ type MicroServiceInterface interface {
 }
 
 type MicroService struct {
-	Id              string
-	Name            string
-	Addr            string
-	Server          *MicroServiceServer
-	GrpcServer      *grpc.Server
-	RouteMap        map[string]MicroServiceControllerFunc
-	ServiceRegister *MicroServiceRegister
+	Id         string
+	Name       string
+	Addr       string
+	Server     *MicroServiceServer
+	GrpcServer *grpc.Server
+	RouteMap   map[string]MicroServiceControllerFunc
 }
 
 func (ms *MicroService) RegisterRouteControllerFunc(key string, handler MicroServiceControllerFunc) {
@@ -26,12 +25,6 @@ func (ms *MicroService) RegisterRouteControllerFunc(key string, handler MicroSer
 		ms.RouteMap = make(map[string]MicroServiceControllerFunc)
 	}
 	ms.RouteMap[key] = handler
-}
-
-func (ms *MicroService) InitServiceRegister() {
-	if ms.ServiceRegister != nil {
-		go ms.ServiceRegister.Init(ms.Name, ms.Id, ms.Addr)
-	}
 }
 
 func (ms *MicroService) Run(addr string) error {
@@ -47,8 +40,6 @@ func (ms *MicroService) Run(addr string) error {
 		Service: ms,
 	}
 	RegisterServiceHandlerServer(ms.GrpcServer, ms.Server)
-
-	ms.InitServiceRegister()
 
 	defer ms.GrpcServer.Stop()
 	err = ms.GrpcServer.Serve(lis)
