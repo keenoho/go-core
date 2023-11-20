@@ -14,6 +14,6 @@ message ServiceResponse {
 }
  
 service ServiceHandler {
-  rpc Send(ServiceRequest) returns (ServiceResponse) {}
-  rpc StreamSend(stream ServiceRequest) returns (ServiceResponse) {}
+  rpc Request(ServiceRequest) returns (ServiceResponse) {}
+  rpc StreamRequest(stream ServiceRequest) returns (ServiceResponse) {}
 }

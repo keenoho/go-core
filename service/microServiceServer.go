@@ -15,7 +15,7 @@ type MicroServiceServer struct {
 	Service *MicroService
 }
 
-func (s *MicroServiceServer) Send(ctx context.Context, in *ServiceRequest) (*ServiceResponse, error) {
+func (s *MicroServiceServer) Request(ctx context.Context, in *ServiceRequest) (resp *ServiceResponse, err error) {
 	if s.Service == nil {
 		return nil, fmt.Errorf("service is not exist")
 	}
@@ -29,12 +29,6 @@ func (s *MicroServiceServer) Send(ctx context.Context, in *ServiceRequest) (*Ser
 	if !isExist {
 		return nil, fmt.Errorf("handler is not in routeMap: %v", in.Url)
 	}
-	defer func() {
-		err := recover()
-		if err != nil {
-			return
-		}
-	}()
 
 	// create context
 	serviceContext := MicroServiceContext{
@@ -44,6 +38,12 @@ func (s *MicroServiceServer) Send(ctx context.Context, in *ServiceRequest) (*Ser
 		RequestIn:      in,
 		ContextData:    map[string]any{},
 	}
+
+	defer func() {
+		if r := recover(); r != nil {
+			err = fmt.Errorf("service handler error: %v", r)
+		}
+	}()
 
 	// call handler
 	res := handler(&serviceContext)
@@ -55,6 +55,6 @@ func (s *MicroServiceServer) Send(ctx context.Context, in *ServiceRequest) (*Ser
 	}, nil
 }
 
-// func (s *MicroServiceServer) StreamSend(serviceHandler ServiceHandler_StreamSendServer) error {
+// func (s *MicroServiceServer) StreamRequest(serviceHandler ServiceHandler_StreamSendServer) error {
 // 	return nil
 // }

@@ -30,6 +30,7 @@ func MakeResponse(args ...any) ResponseData {
 		case 1:
 			{
 				codeValue, _ := v.(int)
+				codeValue64, isInt64 := v.(int64)
 				errValue, isErr := v.(error)
 
 				if isErr {
@@ -39,6 +40,10 @@ func MakeResponse(args ...any) ResponseData {
 					} else {
 						resData.Msg = errValue.Error()
 					}
+				}
+
+				if isInt64 {
+					codeValue = int(codeValue64)
 				}
 
 				if codeValue > 0 {

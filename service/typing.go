@@ -5,3 +5,9 @@ type ResponseData struct {
 	Code int    `json:"code"`
 	Msg  string `json:"msg"`
 }
+
+type ClientResponseData struct {
+	Data any    `json:"data"`
+	Code int    `json:"code"`
+	Msg  string `json:"msg"`
+}

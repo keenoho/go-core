@@ -22,8 +22,8 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ServiceHandlerClient interface {
-	Send(ctx context.Context, in *ServiceRequest, opts ...grpc.CallOption) (*ServiceResponse, error)
-	StreamSend(ctx context.Context, opts ...grpc.CallOption) (ServiceHandler_StreamSendClient, error)
+	Request(ctx context.Context, in *ServiceRequest, opts ...grpc.CallOption) (*ServiceResponse, error)
+	StreamRequest(ctx context.Context, opts ...grpc.CallOption) (ServiceHandler_StreamRequestClient, error)
 }
 
 type serviceHandlerClient struct {
@@ -34,39 +34,39 @@ func NewServiceHandlerClient(cc grpc.ClientConnInterface) ServiceHandlerClient {
 	return &serviceHandlerClient{cc}
 }
 
-func (c *serviceHandlerClient) Send(ctx context.Context, in *ServiceRequest, opts ...grpc.CallOption) (*ServiceResponse, error) {
+func (c *serviceHandlerClient) Request(ctx context.Context, in *ServiceRequest, opts ...grpc.CallOption) (*ServiceResponse, error) {
 	out := new(ServiceResponse)
-	err := c.cc.Invoke(ctx, "/ServiceHandler/Send", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/ServiceHandler/Request", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *serviceHandlerClient) StreamSend(ctx context.Context, opts ...grpc.CallOption) (ServiceHandler_StreamSendClient, error) {
-	stream, err := c.cc.NewStream(ctx, &ServiceHandler_ServiceDesc.Streams[0], "/ServiceHandler/StreamSend", opts...)
+func (c *serviceHandlerClient) StreamRequest(ctx context.Context, opts ...grpc.CallOption) (ServiceHandler_StreamRequestClient, error) {
+	stream, err := c.cc.NewStream(ctx, &ServiceHandler_ServiceDesc.Streams[0], "/ServiceHandler/StreamRequest", opts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &serviceHandlerStreamSendClient{stream}
+	x := &serviceHandlerStreamRequestClient{stream}
 	return x, nil
 }
 
-type ServiceHandler_StreamSendClient interface {
+type ServiceHandler_StreamRequestClient interface {
 	Send(*ServiceRequest) error
 	CloseAndRecv() (*ServiceResponse, error)
 	grpc.ClientStream
 }
 
-type serviceHandlerStreamSendClient struct {
+type serviceHandlerStreamRequestClient struct {
 	grpc.ClientStream
 }
 
-func (x *serviceHandlerStreamSendClient) Send(m *ServiceRequest) error {
+func (x *serviceHandlerStreamRequestClient) Send(m *ServiceRequest) error {
 	return x.ClientStream.SendMsg(m)
 }
 
-func (x *serviceHandlerStreamSendClient) CloseAndRecv() (*ServiceResponse, error) {
+func (x *serviceHandlerStreamRequestClient) CloseAndRecv() (*ServiceResponse, error) {
 	if err := x.ClientStream.CloseSend(); err != nil {
 		return nil, err
 	}
@@ -81,8 +81,8 @@ func (x *serviceHandlerStreamSendClient) CloseAndRecv() (*ServiceResponse, error
 // All implementations must embed UnimplementedServiceHandlerServer
 // for forward compatibility
 type ServiceHandlerServer interface {
-	Send(context.Context, *ServiceRequest) (*ServiceResponse, error)
-	StreamSend(ServiceHandler_StreamSendServer) error
+	Request(context.Context, *ServiceRequest) (*ServiceResponse, error)
+	StreamRequest(ServiceHandler_StreamRequestServer) error
 	mustEmbedUnimplementedServiceHandlerServer()
 }
 
@@ -90,11 +90,11 @@ type ServiceHandlerServer interface {
 type UnimplementedServiceHandlerServer struct {
 }
 
-func (UnimplementedServiceHandlerServer) Send(context.Context, *ServiceRequest) (*ServiceResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Send not implemented")
+func (UnimplementedServiceHandlerServer) Request(context.Context, *ServiceRequest) (*ServiceResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Request not implemented")
 }
-func (UnimplementedServiceHandlerServer) StreamSend(ServiceHandler_StreamSendServer) error {
-	return status.Errorf(codes.Unimplemented, "method StreamSend not implemented")
+func (UnimplementedServiceHandlerServer) StreamRequest(ServiceHandler_StreamRequestServer) error {
+	return status.Errorf(codes.Unimplemented, "method StreamRequest not implemented")
 }
 func (UnimplementedServiceHandlerServer) mustEmbedUnimplementedServiceHandlerServer() {}
 
@@ -109,43 +109,43 @@ func RegisterServiceHandlerServer(s grpc.ServiceRegistrar, srv ServiceHandlerSer
 	s.RegisterService(&ServiceHandler_ServiceDesc, srv)
 }
 
-func _ServiceHandler_Send_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _ServiceHandler_Request_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ServiceRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ServiceHandlerServer).Send(ctx, in)
+		return srv.(ServiceHandlerServer).Request(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/ServiceHandler/Send",
+		FullMethod: "/ServiceHandler/Request",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ServiceHandlerServer).Send(ctx, req.(*ServiceRequest))
+		return srv.(ServiceHandlerServer).Request(ctx, req.(*ServiceRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ServiceHandler_StreamSend_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(ServiceHandlerServer).StreamSend(&serviceHandlerStreamSendServer{stream})
+func _ServiceHandler_StreamRequest_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(ServiceHandlerServer).StreamRequest(&serviceHandlerStreamRequestServer{stream})
 }
 
-type ServiceHandler_StreamSendServer interface {
+type ServiceHandler_StreamRequestServer interface {
 	SendAndClose(*ServiceResponse) error
 	Recv() (*ServiceRequest, error)
 	grpc.ServerStream
 }
 
-type serviceHandlerStreamSendServer struct {
+type serviceHandlerStreamRequestServer struct {
 	grpc.ServerStream
 }
 
-func (x *serviceHandlerStreamSendServer) SendAndClose(m *ServiceResponse) error {
+func (x *serviceHandlerStreamRequestServer) SendAndClose(m *ServiceResponse) error {
 	return x.ServerStream.SendMsg(m)
 }
 
-func (x *serviceHandlerStreamSendServer) Recv() (*ServiceRequest, error) {
+func (x *serviceHandlerStreamRequestServer) Recv() (*ServiceRequest, error) {
 	m := new(ServiceRequest)
 	if err := x.ServerStream.RecvMsg(m); err != nil {
 		return nil, err
@@ -161,14 +161,14 @@ var ServiceHandler_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*ServiceHandlerServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "Send",
-			Handler:    _ServiceHandler_Send_Handler,
+			MethodName: "Request",
+			Handler:    _ServiceHandler_Request_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{
 		{
-			StreamName:    "StreamSend",
-			Handler:       _ServiceHandler_StreamSend_Handler,
+			StreamName:    "StreamRequest",
+			Handler:       _ServiceHandler_StreamRequest_Handler,
 			ClientStreams: true,
 		},
 	},
