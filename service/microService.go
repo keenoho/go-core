@@ -12,12 +12,13 @@ type MicroServiceInterface interface {
 }
 
 type MicroService struct {
-	Id         string
-	Name       string
-	Addr       string
-	Server     *MicroServiceServer
-	GrpcServer *grpc.Server
-	RouteMap   map[string]MicroServiceControllerFunc
+	Id               string
+	Name             string
+	Addr             string
+	Server           *MicroServiceServer
+	GrpcServer       *grpc.Server
+	GrpcServerOption []grpc.ServerOption
+	RouteMap         map[string]MicroServiceControllerFunc
 }
 
 func (ms *MicroService) RegisterRouteControllerFunc(key string, handler MicroServiceControllerFunc) {
@@ -36,14 +37,7 @@ func (ms *MicroService) Run(addr string) error {
 	defer lis.Close()
 
 	ms.GrpcServer = grpc.NewServer(
-	// grpc.UnaryInterceptor(func(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp any, err error) {
-	// 	defer func() {
-	// 		if r := recover(); r != nil {
-	// 			err = r
-	// 		}
-	// 	}()
-	// 	return handler(ctx, req)
-	// }),
+		ms.GrpcServerOption...,
 	)
 	ms.Server = &MicroServiceServer{
 		Service: ms,
