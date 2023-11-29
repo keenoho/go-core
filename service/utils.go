@@ -46,8 +46,8 @@ func MakeResponse(args ...any) ResponseData {
 					codeValue = int(codeValue64)
 				}
 
+				resData.Code = codeValue
 				if codeValue > 0 {
-					resData.Code = codeValue
 					msg, isExist := core.CodeMsgMap[resData.Code]
 					if isExist {
 						resData.Msg = msg
