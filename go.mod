@@ -6,7 +6,7 @@ require (
 	github.com/gin-gonic/gin v1.9.1
 	github.com/gomodule/redigo v1.8.9
 	github.com/joho/godotenv v1.5.1
-	github.com/keenoho/go-tool v0.0.10
+	github.com/keenoho/go-tool v0.0.11
 	google.golang.org/grpc v1.59.0
 	google.golang.org/protobuf v1.31.0
 	gorm.io/driver/mysql v1.5.2
