@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"database/sql/driver"
 	"fmt"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -13,6 +15,7 @@ func (date *EntityDate) Scan(value any) (err error) {
 	nullTime := &sql.NullTime{}
 	err = nullTime.Scan(value)
 	*date = EntityDate(nullTime.Time)
+	fmt.Println(value, nullTime.Time)
 	return
 }
 
@@ -47,8 +50,32 @@ func (date EntityDate) MarshalJSON() ([]byte, error) {
 }
 
 func (date *EntityDate) UnmarshalJSON(b []byte) error {
+	if len(b) < 1 {
+		return nil
+	}
+	str := string(b)
+	if len(str) < 1 {
+		return nil
+	}
+	t, err := strconv.ParseInt(str, 10, 64)
+	if t > 0 && err == nil {
+		d := time.UnixMilli(t)
+		if d.IsZero() {
+			return nil
+		}
+		*date = EntityDate(d)
+		return nil
+	}
+	if strings.Contains(str, "/") {
+		str = strings.ReplaceAll(str, "/", "-")
+	}
+	d, err := time.Parse("2006-01-02 15:04:05", str)
+	if err == nil && !d.IsZero() {
+		*date = EntityDate(d)
+		return nil
+	}
+
 	return nil
-	// return (*time.Time)(date).UnmarshalJSON(b)
 }
 
 func (date EntityDate) GetTime() time.Time {
