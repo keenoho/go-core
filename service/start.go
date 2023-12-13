@@ -1,8 +1,11 @@
 package service
 
 import (
+	"fmt"
+	"math/rand"
+	"time"
+
 	"github.com/keenoho/go-core"
-	"github.com/keenoho/go-tool"
 	"google.golang.org/grpc"
 )
 
@@ -11,10 +14,12 @@ func CreateServiceApp(gprcServerOption ...grpc.ServerOption) *MicroService {
 	serviceName := core.GetOneConfig("ServiceName")
 
 	if len(serviceId) < 1 {
-		serviceId = tool.UnionId16String()
+		i4 := rand.Intn(9999)
+		umi := time.Now().UnixMilli()
+		serviceId = fmt.Sprintf("%d-%d", i4, umi)
 	}
 	if len(serviceName) < 1 {
-		serviceName = tool.FileGetDirName("")
+		serviceName = "unknow"
 	}
 
 	app := &MicroService{
