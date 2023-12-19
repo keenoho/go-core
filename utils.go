@@ -29,7 +29,7 @@ func GetRegisterAddress() string {
 }
 
 /**
- * @params: data any, code int, msg string, status int
+ * @params: data any, code int, msg string, status int, autoNilDataWhenError bool(default: true)
  **/
 func MakeResponse(args ...any) (ResponseData, int) {
 	now := time.Now()
@@ -39,6 +39,13 @@ func MakeResponse(args ...any) (ResponseData, int) {
 		Code: 0,
 		Msg:  "ok",
 		Time: now.UnixMilli(),
+	}
+	autoNilDataWhenError := true
+	if len(args) >= 5 {
+		boolValue, isBool := args[4].(bool)
+		if isBool {
+			autoNilDataWhenError = boolValue
+		}
 	}
 	for i, v := range args {
 		switch i {
@@ -59,6 +66,9 @@ func MakeResponse(args ...any) (ResponseData, int) {
 					} else {
 						resData.Msg = errValue.Error()
 						codeValue = -1
+						if autoNilDataWhenError {
+							resData.Data = nil
+						}
 					}
 				}
 
@@ -80,8 +90,11 @@ func MakeResponse(args ...any) (ResponseData, int) {
 				msgValue, _ := v.(string)
 				errValue, isErr := v.(error)
 
-				if isErr {
+				if isErr && errValue != nil {
 					msgValue = errValue.Error()
+					if autoNilDataWhenError {
+						resData.Data = nil
+					}
 				}
 
 				if len(msgValue) > 0 {
