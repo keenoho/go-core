@@ -7,113 +7,48 @@ import (
 	"github.com/joho/godotenv"
 )
 
-var configKeyMap map[string]string = map[string]string{
-	"App":              "APP",
-	"AppType":          "APP_TYPE",
-	"Key":              "KEY",
-	"Env":              "ENV",
-	"Host":             "HOST",
-	"Port":             "PORT",
-	"RegisterHost":     "REGISTER_HOST",
-	"RegisterPort":     "REGISTER_PORT",
-	"ServiceId":        "SERVICE_ID",
-	"ServiceName":      "SERVICE_NAME",
-	"StaticDir":        "STATIC_DIR",
-	"StaticPath":       "STATIC_PATH",
-	"UploadDir":        "UPLOAD_DIR",
-	"TrustedProxies":   "TRUSTED_PROXIES",
-	"CorsAllowOrigin":  "CORS_ALLOW_ORIGIN",
-	"CorsAllowMethods": "CORS_ALLOW_METHODS",
-	"CorsAllowHeaders": "CORS_ALLOW_HEADERS",
-	"DbDatabase":       "DB_DATABASE",
-	"DbUsername":       "DB_USERNAME",
-	"DbPassword":       "DB_PASSWORD",
-	"DbHost":           "DB_HOST",
-	"DbPort":           "DB_PORT",
-	"DbMode":           "DB_MODE",
-	"DbDsn":            "DB_DSN",
-	"DbDsnAppend":      "DB_DSN_APPEND",
-	"RedisDatabase":    "REDIS_DATABASE",
-	"RedisPassword":    "REDIS_PASSWORD",
-	"RedisHost":        "REDIS_HOST",
-	"RedisPort":        "REDIS_PORT",
-	"RedisMode":        "REDIS_MODE",
+// env file field
+var (
+	FIELD_ENV      = "ENV"
+	FIELD_APP_ID   = "APP_ID"
+	FIELD_APP_TYPE = "APP_TYPE" // http or grpc
+	FIELD_HOST     = "HOST"
+	FIELD_PORT     = "PORT"
+)
+
+// default data
+var (
+	DEFAULT_ENV      = "production"
+	DEFAULT_APP_ID   = "keenoho-app-0001"
+	DEFAULT_APP_TYPE = "http"
+	DEFAULT_HOST     = "0.0.0.0"
+	DEFAULT_PORT     = "8080"
+)
+
+func ConfigGet(key string) string {
+	return os.Getenv(key)
 }
 
-var cacheConfig map[string]string = nil
-
-func AddConfigKey(configKey string, envName string) {
-	configKeyMap[configKey] = envName
-}
-
-func AddConfigKeys(configMap map[string]string) {
-	for k, v := range configMap {
-		configKeyMap[k] = v
-	}
-}
-
-func GetConfig(keys ...string) map[string]string {
-	if len(keys) > 0 {
-		conf := map[string]string{}
-		for _, k := range keys {
-			envKey, isExist := configKeyMap[k]
-			if isExist {
-				conf[k] = os.Getenv(envKey)
-			} else {
-				conf[k] = os.Getenv(k)
-			}
-		}
-		return conf
-	} else if cacheConfig != nil {
-		return cacheConfig
-	} else {
-		cacheConfig = map[string]string{}
-		for k, ek := range configKeyMap {
-			cacheConfig[k] = os.Getenv(ek)
-		}
-		return cacheConfig
-	}
-}
-
-func GetOneConfig(key string) string {
-	if cacheConfig != nil {
-		val, isExist := cacheConfig[key]
-		if isExist {
-			return val
-		}
-	} else {
-		envKey, isExist := configKeyMap[key]
-		if isExist {
-			return os.Getenv(envKey)
-		} else {
-			return os.Getenv(key)
-		}
-	}
-	return ""
-}
-
-func SetConfig(configKey string, envKey string, value string) {
-	AddConfigKey(configKey, envKey)
+func ConfigSet(configKey string, envKey string, value string) {
 	os.Setenv(envKey, value)
 }
 
-func LoadConfig() {
+func ConfigLoad(targetEnv ...string) {
 	var env string
+	var appId string
+	var appType string
 	var host string
 	var port string
-	var key string
-	var app string
-	var appType string
-	var registerHost string
-	var registerPort string
-	flag.StringVar(&env, "env", "production", "env usage")
-	flag.StringVar(&host, "host", "", "host usage")
-	flag.StringVar(&port, "port", "", "port usage")
-	flag.StringVar(&key, "key", "", "key usage")
-	flag.StringVar(&app, "app", "", "app usage")
-	flag.StringVar(&appType, "appType", "", "app_type usage")
-	flag.StringVar(&registerHost, "registerHost", "", "registerHost usage")
-	flag.StringVar(&registerPort, "registerPort", "", "registerPort usage")
+
+	if len(targetEnv) > 0 {
+		env = targetEnv[len(targetEnv)-1]
+	} else {
+		flag.StringVar(&env, "env", DEFAULT_ENV, "env usage")
+	}
+	flag.StringVar(&appId, "appId", DEFAULT_APP_ID, "appId usage")
+	flag.StringVar(&appType, "appType", DEFAULT_APP_TYPE, "appType usage")
+	flag.StringVar(&host, "host", DEFAULT_HOST, "host usage")
+	flag.StringVar(&port, "port", DEFAULT_PORT, "port usage")
 	flag.Parse()
 
 	envFileName := ".env." + env
@@ -124,25 +59,16 @@ func LoadConfig() {
 	}
 	os.Setenv("ENV", env)
 
-	if len(host) > 0 {
-		os.Setenv("HOST", host)
-	}
-	if len(port) > 0 {
-		os.Setenv("PORT", port)
-	}
-	if len(key) > 0 {
-		os.Setenv("KEY", key)
-	}
-	if len(app) > 0 {
-		os.Setenv("APP", app)
+	if len(appId) > 0 {
+		os.Setenv(FIELD_APP_ID, appId)
 	}
 	if len(appType) > 0 {
-		os.Setenv("APP_TYPE", appType)
+		os.Setenv(FIELD_APP_TYPE, appType)
 	}
-	if len(registerHost) > 0 {
-		os.Setenv("REGISTER_HOST", registerHost)
+	if len(host) > 0 {
+		os.Setenv(FIELD_HOST, host)
 	}
-	if len(registerPort) > 0 {
-		os.Setenv("REGISTER_PORT", registerPort)
+	if len(port) > 0 {
+		os.Setenv(FIELD_PORT, port)
 	}
 }
