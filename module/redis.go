@@ -6,8 +6,8 @@ import (
 	"strconv"
 	"time"
 
-	"gitee.com/keenoho/go-core"
 	"github.com/gomodule/redigo/redis"
+	"github.com/keenoho/go-core"
 )
 
 var storeRedis *redis.Pool

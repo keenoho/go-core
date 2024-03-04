@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"reflect"
 
-	"gitee.com/keenoho/go-core/grpc_engine"
+	"github.com/keenoho/go-core/grpc_engine"
 	"google.golang.org/grpc"
 
 	"github.com/gin-gonic/gin"

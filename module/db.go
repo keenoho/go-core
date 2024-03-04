@@ -5,7 +5,7 @@ import (
 	"log"
 	"time"
 
-	"gitee.com/keenoho/go-core"
+	"github.com/keenoho/go-core"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"

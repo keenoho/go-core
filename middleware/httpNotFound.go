@@ -3,8 +3,8 @@ package extend
 import (
 	"net/http"
 
-	"gitee.com/keenoho/go-core"
 	"github.com/gin-gonic/gin"
+	"github.com/keenoho/go-core"
 )
 
 func HttpNotFoundMiddleware() gin.HandlerFunc {

@@ -4,8 +4,8 @@ import (
 	"log"
 	"net/http"
 
-	"gitee.com/keenoho/go-core"
 	"github.com/gin-gonic/gin"
+	"github.com/keenoho/go-core"
 )
 
 func HttpErrorMiddleware() gin.HandlerFunc {

@@ -5,11 +5,11 @@ import (
 	"testing"
 	"time"
 
-	"gitee.com/keenoho/go-core"
-	middleware "gitee.com/keenoho/go-core/middleware"
-	"gitee.com/keenoho/go-core/module"
-	"gitee.com/keenoho/go-core/protobuf"
 	"github.com/gomodule/redigo/redis"
+	"github.com/keenoho/go-core"
+	middleware "github.com/keenoho/go-core/middleware"
+	"github.com/keenoho/go-core/module"
+	"github.com/keenoho/go-core/protobuf"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
