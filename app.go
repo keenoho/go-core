@@ -125,6 +125,12 @@ func AppNew(options ...AppOption) *App {
 			Host: DEFAULT_HOST,
 			Port: DEFAULT_PORT,
 		},
+		{
+			Id:   ConfigGet(FIELD_APP_ID),
+			Type: ConfigGet(FIELD_APP_TYPE),
+			Host: ConfigGet(FIELD_HOST),
+			Port: ConfigGet(FIELD_PORT),
+		},
 	}
 	newOptions = append(newOptions, options...)
 
