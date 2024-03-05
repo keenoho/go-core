@@ -7,7 +7,9 @@ import (
 )
 
 func TestConfig(t *testing.T) {
-	core.ConfigLoad()
+	core.ConfigLoad("development")
 	env := core.ConfigGet("ENV")
-	t.Log(env)
+	host := core.ConfigGet("HOST")
+	port := core.ConfigGet("PORT")
+	t.Log(env, host, port)
 }

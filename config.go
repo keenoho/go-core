@@ -45,19 +45,24 @@ func ConfigLoad(targetEnv ...string) {
 	} else {
 		flag.StringVar(&env, "env", DEFAULT_ENV, "env usage")
 	}
-	flag.StringVar(&appId, "appId", DEFAULT_APP_ID, "appId usage")
-	flag.StringVar(&appType, "appType", DEFAULT_APP_TYPE, "appType usage")
-	flag.StringVar(&host, "host", DEFAULT_HOST, "host usage")
-	flag.StringVar(&port, "port", DEFAULT_PORT, "port usage")
-	flag.Parse()
+
+	os.Setenv(FIELD_ENV, env)
+	os.Setenv(FIELD_APP_ID, DEFAULT_APP_ID)
+	os.Setenv(FIELD_APP_TYPE, DEFAULT_APP_TYPE)
+	os.Setenv(FIELD_HOST, DEFAULT_HOST)
+	os.Setenv(FIELD_PORT, DEFAULT_PORT)
 
 	envFileName := ".env." + env
-
 	readEnv, _ := godotenv.Read(".env", envFileName)
 	for k, v := range readEnv {
 		os.Setenv(k, v)
 	}
-	os.Setenv("ENV", env)
+
+	flag.StringVar(&appId, "appId", "", "appId usage")
+	flag.StringVar(&appType, "appType", "", "appType usage")
+	flag.StringVar(&host, "host", "", "host usage")
+	flag.StringVar(&port, "port", "", "port usage")
+	flag.Parse()
 
 	if len(appId) > 0 {
 		os.Setenv(FIELD_APP_ID, appId)
