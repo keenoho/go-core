@@ -52,6 +52,7 @@ func ConfigLoad(targetEnv ...string) {
 	os.Setenv(FIELD_HOST, DEFAULT_HOST)
 	os.Setenv(FIELD_PORT, DEFAULT_PORT)
 
+	godotenv.Load(".env")
 	envFileName := ".env." + env
 	readEnv, _ := godotenv.Read(".env", envFileName)
 	for k, v := range readEnv {
