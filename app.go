@@ -32,7 +32,12 @@ type App struct {
 func (app *App) Init() {
 	// set env
 	env := ConfigGet(FIELD_ENV)
-	if env == "production" {
+	mode := ConfigGet(FIELD_MODE)
+	if len(mode) > 0 {
+		SetMode(mode)
+		gin.SetMode(mode)
+		grpc_engine.SetMode(mode)
+	} else if env == "production" {
 		SetMode(ReleaseMode)
 		gin.SetMode(gin.ReleaseMode)
 		grpc_engine.SetMode(grpc_engine.ReleaseMode)

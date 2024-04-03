@@ -14,6 +14,7 @@ var (
 	FIELD_APP_TYPE = "APP_TYPE" // http or grpc
 	FIELD_HOST     = "HOST"
 	FIELD_PORT     = "PORT"
+	FIELD_MODE     = "MODE" // release or debug
 )
 
 // default data
@@ -23,6 +24,7 @@ var (
 	DEFAULT_APP_TYPE = "http"
 	DEFAULT_HOST     = "0.0.0.0"
 	DEFAULT_PORT     = "8080"
+	DEFAULT_MODE     = ""
 )
 
 func ConfigGet(key string) string {
@@ -39,12 +41,14 @@ func ConfigLoad(targetEnv ...string) {
 	var appType string = DEFAULT_APP_TYPE
 	var host string = DEFAULT_HOST
 	var port string = DEFAULT_PORT
+	var mode string = DEFAULT_MODE
 
 	flag.StringVar(&env, "env", DEFAULT_ENV, "env usage")
 	flag.StringVar(&appId, "appId", DEFAULT_APP_ID, "appId usage")
 	flag.StringVar(&appType, "appType", DEFAULT_APP_TYPE, "appType usage")
 	flag.StringVar(&host, "host", DEFAULT_HOST, "host usage")
 	flag.StringVar(&port, "port", DEFAULT_PORT, "port usage")
+	flag.StringVar(&mode, "mode", DEFAULT_MODE, "mode usage")
 	flag.Parse()
 
 	if len(targetEnv) > 0 {
@@ -56,6 +60,7 @@ func ConfigLoad(targetEnv ...string) {
 	os.Setenv(FIELD_APP_TYPE, appType)
 	os.Setenv(FIELD_HOST, host)
 	os.Setenv(FIELD_PORT, port)
+	os.Setenv(FIELD_MODE, mode)
 
 	envFileName := ".env." + env
 	readEnv, _ := godotenv.Read(".env", envFileName)
