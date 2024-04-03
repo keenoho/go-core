@@ -132,7 +132,13 @@ func (c *Controller) BindParams(ctx *Context, obj any) {
 		{
 			err := ctx.HttpServiceContext.Copy().ShouldBind(obj)
 			if err != nil {
-				panic(ErrorData{Code: CODE_PARAMS_MISSING})
+				tags := FilterOutMissingTags(err.Error())
+				code := CODE_PARAMS_MISSING
+				msg := CODE_MESSAGE_MAP[code]
+				if len(tags) > 0 {
+					msg += ":" + strings.Join(tags, ",")
+				}
+				panic(ErrorData{Code: code, Msg: msg})
 			}
 			break
 		}

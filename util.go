@@ -1,8 +1,11 @@
 package core
 
 import (
+	"fmt"
 	"reflect"
+	"regexp"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -111,4 +114,24 @@ func MakeResponse(args ...any) (ResponseData, int) {
 		}
 	}
 	return resData, status
+}
+
+func FilterOutMissingTags(str string) []string {
+	partten := `Error:Field validation for '[\w\d-_]+' failed on the 'required' tag`
+	matched, _ := regexp.MatchString(partten, str)
+	tags := []string{}
+	if matched {
+		reg, _ := regexp.Compile(`Field validation for '[\w\d-_]+`)
+		strs := strings.Split(str, "\n")
+		for _, s := range strs {
+			findtags := reg.FindAllString(s, -1)
+			fmt.Println(findtags)
+			if len(findtags) > 0 {
+				for _, v := range findtags {
+					tags = append(tags, strings.Replace(v, "Field validation for '", "", -1))
+				}
+			}
+		}
+	}
+	return tags
 }
