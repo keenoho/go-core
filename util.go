@@ -1,7 +1,6 @@
 package core
 
 import (
-	"fmt"
 	"reflect"
 	"regexp"
 	"strconv"
@@ -125,7 +124,6 @@ func FilterOutMissingTags(str string) []string {
 		strs := strings.Split(str, "\n")
 		for _, s := range strs {
 			findtags := reg.FindAllString(s, -1)
-			fmt.Println(findtags)
 			if len(findtags) > 0 {
 				for _, v := range findtags {
 					tags = append(tags, strings.Replace(v, "Field validation for '", "", -1))
