@@ -12,7 +12,7 @@ type ControllerResponse struct {
 	Status int
 }
 
-type ControllerHandler func(ctx *Context) ControllerResponse
+type ControllerHandler func(ctx *Context)
 
 type ControllerInterface interface {
 	Init(app *App)
@@ -27,7 +27,6 @@ type ControllerRouteMapStruct struct {
 }
 
 type Controller struct {
-	Module
 	App        *App
 	PrefixPath string
 	RouteMap   map[string]ControllerRouteMapStruct
@@ -55,7 +54,7 @@ func (c *Controller) Register() {
 	switch c.App.Type {
 	case APP_TYPE_HTTP:
 		{
-			c.registerHttpHandler(c.App)
+			c.RegisterHttpHandler(c.App)
 			break
 		}
 	case APP_TYPE_GRPC:
@@ -66,7 +65,7 @@ func (c *Controller) Register() {
 	}
 }
 
-func (c *Controller) registerHttpHandler(app *App) {
+func (c *Controller) RegisterHttpHandler(app *App) {
 	var ginRouter *gin.RouterGroup
 	if len(c.PrefixPath) > 0 {
 		ginRouter = app.HttpServer.Group(c.PrefixPath)
@@ -88,8 +87,8 @@ func (c *Controller) registerHttpHandler(app *App) {
 			ginRouter.PUT(value.Path, c.ControllerToGinHandler(ControllerHandler(value.Handler)))
 		case "DELETE":
 			ginRouter.DELETE(value.Path, c.ControllerToGinHandler(ControllerHandler(value.Handler)))
-		default:
-			ginRouter.GET(value.Path, c.ControllerToGinHandler(ControllerHandler(value.Handler)))
+		case "ANY":
+			ginRouter.Any(value.Path, c.ControllerToGinHandler(ControllerHandler(value.Handler)))
 		}
 	}
 }
@@ -100,9 +99,7 @@ func (c *Controller) RegisterGrpcHandler(app *App) {
 
 func (c *Controller) ControllerToGinHandler(controller ControllerHandler) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		res := controller(&Context{App: c.App, HttpServiceContext: ctx})
-		ctx.Header("Cache-Control", "no-cache")
-		ctx.JSON(res.Status, res.Body)
+		controller(&Context{App: c.App, HttpServiceContext: ctx})
 	}
 }
 
@@ -114,12 +111,10 @@ func (c *Controller) ControllerToGrpcServiceHandler(controller ControllerHandler
  * @Params: data any, code int64, msg string, status int
  * @Response: ControllerResponse
  **/
-func (c *Controller) MakeResponse(args ...any) ControllerResponse {
+func (c *Controller) SendJson(ctx *Context, args ...any) {
 	resData, status := MakeResponse(args...)
-	return ControllerResponse{
-		Body:   resData,
-		Status: status,
-	}
+	ctx.HttpServiceContext.Header("Cache-Control", "no-cache")
+	ctx.HttpServiceContext.JSON(status, resData)
 }
 
 func (c *Controller) BindParams(ctx *Context, obj any) {
@@ -132,13 +127,7 @@ func (c *Controller) BindParams(ctx *Context, obj any) {
 		{
 			err := ctx.HttpServiceContext.Copy().ShouldBind(obj)
 			if err != nil {
-				tags := FilterOutMissingTags(err.Error())
-				code := CODE_PARAMS_MISSING
-				msg := CODE_MESSAGE_MAP[code]
-				if len(tags) > 0 {
-					msg += ":" + strings.Join(tags, ",")
-				}
-				panic(ErrorData{Code: code, Msg: msg})
+				panic(ErrorData{Code: CODE_PARAMS_MISSING})
 			}
 			break
 		}
@@ -147,10 +136,4 @@ func (c *Controller) BindParams(ctx *Context, obj any) {
 			break
 		}
 	}
-}
-
-func RegisterController(app *App, execController any) {
-	execController.(ControllerInterface).Init(app)
-	execController.(ControllerInterface).URLMapping()
-	execController.(ControllerInterface).Register()
 }

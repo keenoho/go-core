@@ -1,4 +1,4 @@
-package extend
+package middleware
 
 import (
 	"net/http"

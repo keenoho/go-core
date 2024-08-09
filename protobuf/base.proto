@@ -2,18 +2,18 @@ syntax = "proto3";
 
 option go_package = "./;protobuf";
  
-message RequestBody {
+message BaseRequestBody {
   string url = 1;
   bytes data = 2;
 }
 
-message ResponseBody {
+message BaseResponseBody {
   bytes data = 1;
   int64 code = 2;
   string msg = 3;
 }
  
 service BaseService {
-  rpc Request(RequestBody) returns (ResponseBody) {}
-  rpc StreamRequest(stream RequestBody) returns (ResponseBody) {}
+  rpc Request(BaseRequestBody) returns (BaseResponseBody) {}
+  rpc StreamRequest(stream BaseRequestBody) returns (BaseResponseBody) {}
 }

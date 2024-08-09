@@ -1,38 +1,9 @@
 package core
 
 import (
-	"reflect"
-	"regexp"
 	"strconv"
-	"strings"
 	"time"
 )
-
-func StructConvert(source any, target any, judgeHandler ...func(fieldName string, fieldValue reflect.Value) bool) {
-	sourceType := reflect.TypeOf(source)
-	sourceValue := reflect.ValueOf(source)
-	targetType := reflect.TypeOf(target).Elem()
-	targetValue := reflect.ValueOf(target).Elem()
-
-	for i := 0; i < sourceType.NumField(); i++ {
-		fieldName := sourceType.Field(i).Name
-		fieldValue := sourceValue.FieldByName(fieldName)
-
-		if len(judgeHandler) > 0 {
-			if !(judgeHandler[0](fieldName, fieldValue)) {
-				continue
-			}
-		}
-
-		if targetFieldType, ok := targetType.FieldByName(fieldName); ok {
-			targetFieldValue := targetValue.FieldByName(fieldName)
-
-			if targetFieldValue.CanSet() && fieldValue.Type() == targetFieldType.Type {
-				targetFieldValue.Set(fieldValue)
-			}
-		}
-	}
-}
 
 /**
  * @params: data any, code int64, msg string, status int
@@ -113,23 +84,4 @@ func MakeResponse(args ...any) (ResponseData, int) {
 		}
 	}
 	return resData, status
-}
-
-func FilterOutMissingTags(str string) []string {
-	partten := `Error:Field validation for '[\w\d-_]+' failed on the 'required' tag`
-	matched, _ := regexp.MatchString(partten, str)
-	tags := []string{}
-	if matched {
-		reg, _ := regexp.Compile(`Field validation for '[\w\d-_]+`)
-		strs := strings.Split(str, "\n")
-		for _, s := range strs {
-			findtags := reg.FindAllString(s, -1)
-			if len(findtags) > 0 {
-				for _, v := range findtags {
-					tags = append(tags, strings.Replace(v, "Field validation for '", "", -1))
-				}
-			}
-		}
-	}
-	return tags
 }

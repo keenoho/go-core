@@ -21,10 +21,10 @@ func (e *Engine) AddServerOption(opt ...grpc.ServerOption) {
 	e.ServerOption = append(e.ServerOption, opt...)
 }
 
-func (e *Engine) RegisterService(sd *grpc.ServiceDesc, ss any) {
+func (e *Engine) RegisterService(serviceDesc *grpc.ServiceDesc, serviceServer any) {
 	e.ServiceList = append(e.ServiceList, RegisterServiceOption{
-		ServiceDesc:   sd,
-		ServiceServer: ss,
+		ServiceDesc:   serviceDesc,
+		ServiceServer: serviceServer,
 	})
 }
 
@@ -37,6 +37,9 @@ func (e *Engine) Run(addr string) error {
 	}
 	if len(e.ServiceList) > 0 {
 		for _, s := range e.ServiceList {
+			if t, ok := s.ServiceServer.(interface{ testEmbeddedByValue() }); ok {
+				t.testEmbeddedByValue()
+			}
 			e.Server.RegisterService(s.ServiceDesc, s.ServiceServer)
 		}
 	}

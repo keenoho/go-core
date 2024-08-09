@@ -1,19 +1,19 @@
-package extend
+package middleware
 
 import (
 	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
-	"github.com/keenoho/go-core"
 )
 
-func HttpCorsMiddleware() gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		corsAllowOrigin := core.ConfigGet("CORS_ALLOW_ORIGIN")
-		corsAllowMethods := core.ConfigGet("CORS_ALLOW_METHODS")
-		corsAllowHeaders := core.ConfigGet("CORS_ALLOW_HEADERS")
-		corsMaxAge := core.ConfigGet("CORS_MAX_AGE")
+func HttpCorsMiddleware(headers ...map[string]string) gin.HandlerFunc {
+	corsAllowOrigin := os.Getenv("CORS_ALLOW_ORIGIN")
+	corsAllowMethods := os.Getenv("CORS_ALLOW_METHODS")
+	corsAllowHeaders := os.Getenv("CORS_ALLOW_HEADERS")
+	corsMaxAge := os.Getenv("CORS_MAX_AGE")
 
+	return func(ctx *gin.Context) {
 		ctx.Header("Access-Control-Allow-Origin", corsAllowOrigin)
 		ctx.Header("Access-Control-Allow-Methods", corsAllowMethods)
 		ctx.Header("Access-Control-Allow-Headers", corsAllowHeaders)
@@ -21,6 +21,14 @@ func HttpCorsMiddleware() gin.HandlerFunc {
 
 		if ctx.Request.Method == "OPTIONS" {
 			ctx.AbortWithStatus(http.StatusNoContent)
+		}
+
+		if len(headers) > 0 {
+			for _, headerMap := range headers {
+				for k, v := range headerMap {
+					ctx.Header(k, v)
+				}
+			}
 		}
 
 		ctx.Next()

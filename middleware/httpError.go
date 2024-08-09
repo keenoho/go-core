@@ -1,14 +1,13 @@
-package extend
+package middleware
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/keenoho/go-core"
 )
 
-func HttpErrorMiddleware() gin.HandlerFunc {
+func HttpErrorMiddleware(errorHandler ...func(any)) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		defer func() {
 			err := recover()
@@ -49,7 +48,16 @@ func HttpErrorMiddleware() gin.HandlerFunc {
 
 				responseData, status := core.MakeResponse(data, code, msg, status)
 				ctx.AbortWithStatusJSON(status, responseData)
-				log.Println("Error:", err)
+
+				if len(errorHandler) > 0 {
+					for _, handler := range errorHandler {
+						go handler(err)
+					}
+				}
+
+				if !isErrorData {
+					core.Log("[Error] %v", err)
+				}
 			}
 		}()
 		ctx.Next()

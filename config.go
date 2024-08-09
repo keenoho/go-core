@@ -3,6 +3,8 @@ package core
 import (
 	"flag"
 	"os"
+	"path"
+	"strings"
 
 	"github.com/joho/godotenv"
 )
@@ -24,18 +26,34 @@ var (
 	DEFAULT_APP_TYPE = "http"
 	DEFAULT_HOST     = "0.0.0.0"
 	DEFAULT_PORT     = "8080"
-	DEFAULT_MODE     = ""
+	DEFAULT_MODE     = "release"
 )
+
+type ConfigOption struct {
+	Env    string
+	EnvDir string
+}
 
 func ConfigGet(key string) string {
 	return os.Getenv(key)
 }
 
-func ConfigSet(configKey string, envKey string, value string) {
-	os.Setenv(envKey, value)
+func ConfigSet(key string, value string) {
+	os.Setenv(key, value)
 }
 
-func ConfigLoad(targetEnv ...string) {
+func ConfigSetMap(envMap map[string]string) {
+	for key, value := range envMap {
+		os.Setenv(key, value)
+	}
+}
+
+func ConfigLoad(options ...ConfigOption) {
+	pwd, err := os.Getwd()
+	if err != nil {
+		pwd = ""
+	}
+	var envDir string = pwd
 	var env string = DEFAULT_ENV
 	var appId string = DEFAULT_APP_ID
 	var appType string = DEFAULT_APP_TYPE
@@ -51,8 +69,15 @@ func ConfigLoad(targetEnv ...string) {
 	flag.StringVar(&mode, "mode", DEFAULT_MODE, "mode usage")
 	flag.Parse()
 
-	if len(targetEnv) > 0 {
-		env = targetEnv[len(targetEnv)-1]
+	if len(options) > 0 {
+		for _, opt := range options {
+			if len(opt.Env) > 0 {
+				env = opt.Env
+			}
+			if len(opt.EnvDir) > 0 {
+				envDir = opt.EnvDir
+			}
+		}
 	}
 
 	os.Setenv(FIELD_ENV, env)
@@ -62,8 +87,14 @@ func ConfigLoad(targetEnv ...string) {
 	os.Setenv(FIELD_PORT, port)
 	os.Setenv(FIELD_MODE, mode)
 
-	envFileName := ".env." + env
-	readEnv, _ := godotenv.Read(".env", envFileName)
+	if len(envDir) > 0 && !strings.HasSuffix(envDir, "/") {
+		envDir = envDir + "/"
+	}
+	filenames := []string{
+		path.Join(envDir, ".env"),
+		path.Join(envDir, ".env."+env),
+	}
+	readEnv, _ := godotenv.Read(filenames...)
 	for k, v := range readEnv {
 		os.Setenv(k, v)
 	}

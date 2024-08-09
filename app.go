@@ -2,7 +2,6 @@ package core
 
 import (
 	"fmt"
-	"reflect"
 
 	"github.com/keenoho/go-core/grpc_engine"
 	"google.golang.org/grpc"
@@ -29,6 +28,7 @@ type App struct {
 	GrpcServer *grpc_engine.Engine
 }
 
+// init
 func (app *App) Init() {
 	// set env
 	env := ConfigGet(FIELD_ENV)
@@ -80,20 +80,13 @@ func (app *App) initGrpcServer() {
 	app.GrpcServer = grpc_engine.New()
 }
 
-func (app *App) InitModule(modules ...ModuleInterface) {
-	for _, module := range modules {
-		module.Init(app)
-	}
-}
-
-func (app *App) InitModuleUseCustomCaller(customCaller func(app *App, m any), modules ...ModuleInterface) {
-	for _, module := range modules {
-		customCaller(app, module)
-	}
-}
-
+// middleware or option
 func (app *App) UseHttpMiddleware(middleware ...gin.HandlerFunc) {
 	app.HttpServer.Use(middleware...)
+}
+
+func (app *App) UseHttpNoRoute(handlers ...gin.HandlerFunc) {
+	app.HttpServer.NoRoute(handlers...)
 }
 
 func (app *App) AddGrpcServerOption(option ...grpc.ServerOption) {
@@ -104,6 +97,16 @@ func (app *App) RegisterGrpcService(sd *grpc.ServiceDesc, ss any) {
 	app.GrpcServer.RegisterService(sd, ss)
 }
 
+// controller
+func (app *App) RegisterController(execController ...ControllerInterface) {
+	for _, controller := range execController {
+		controller.Init(app)
+		controller.URLMapping()
+		controller.Register()
+	}
+}
+
+// start
 func (app *App) Start() error {
 	startUpAddr := fmt.Sprintf("%s:%s", app.Host, app.Port)
 
@@ -121,6 +124,7 @@ func (app *App) Start() error {
 	}
 }
 
+// new one
 func AppNew(options ...AppOption) *App {
 	app := App{}
 	newOptions := []AppOption{
@@ -140,9 +144,18 @@ func AppNew(options ...AppOption) *App {
 	newOptions = append(newOptions, options...)
 
 	for _, opt := range newOptions {
-		StructConvert(opt, &app, func(fieldName string, fieldValue reflect.Value) bool {
-			return len(fieldValue.String()) > 0
-		})
+		if len(opt.Id) > 0 {
+			app.Id = opt.Id
+		}
+		if len(opt.Type) > 0 {
+			app.Type = opt.Type
+		}
+		if len(opt.Host) > 0 {
+			app.Host = opt.Host
+		}
+		if len(opt.Port) > 0 {
+			app.Port = opt.Port
+		}
 	}
 	app.Init()
 	return &app
