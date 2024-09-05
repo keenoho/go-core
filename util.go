@@ -1,6 +1,7 @@
 package core
 
 import (
+	"net/http"
 	"strconv"
 	"time"
 )
@@ -10,7 +11,7 @@ import (
  **/
 func MakeResponse(args ...any) (ResponseData, int) {
 	now := time.Now()
-	status := 200
+	status := http.StatusOK
 	resData := ResponseData{
 		Data: nil,
 		Code: 0,

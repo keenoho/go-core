@@ -109,12 +109,24 @@ func (c *Controller) ControllerToGrpcServiceHandler(controller ControllerHandler
 
 /**
  * @Params: data any, code int64, msg string, status int
- * @Response: ControllerResponse
  **/
 func (c *Controller) SendJson(ctx *Context, args ...any) {
 	resData, status := MakeResponse(args...)
-	ctx.HttpServiceContext.Header("Cache-Control", "no-cache")
-	ctx.HttpServiceContext.JSON(status, resData)
+	if c.App.Type == APP_TYPE_HTTP {
+		ctx.HttpServiceContext.Header("Cache-Control", "no-cache")
+		ctx.HttpServiceContext.JSON(status, resData)
+	}
+}
+
+/**
+ * @Params: data string, status int
+ **/
+func (c *Controller) SendText(ctx *Context, args ...any) {
+	resData, status := MakeResponse(args...)
+	if c.App.Type == APP_TYPE_HTTP {
+		ctx.HttpServiceContext.Header("Cache-Control", "no-cache")
+		ctx.HttpServiceContext.String(status, resData.Data.(string))
+	}
 }
 
 func (c *Controller) BindParams(ctx *Context, obj any) {
