@@ -22,6 +22,9 @@ func (e *Engine) AddServerOption(opt ...grpc.ServerOption) {
 }
 
 func (e *Engine) RegisterService(serviceDesc *grpc.ServiceDesc, serviceServer any) {
+
+	debugPrintRegisterService(serviceDesc)
+
 	e.ServiceList = append(e.ServiceList, RegisterServiceOption{
 		ServiceDesc:   serviceDesc,
 		ServiceServer: serviceServer,

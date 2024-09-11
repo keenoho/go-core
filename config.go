@@ -16,7 +16,7 @@ var (
 	FIELD_APP_TYPE = "APP_TYPE" // http or grpc
 	FIELD_HOST     = "HOST"
 	FIELD_PORT     = "PORT"
-	FIELD_MODE     = "MODE" // release or debug
+	FIELD_MODE     = "MODE" // release or test or debug
 )
 
 // default data

@@ -86,6 +86,7 @@ func (c *Controller) Register(ci ControllerInterface) {
 		}
 	case APP_TYPE_GRPC:
 		{
+			c.RegisterGrpcController(ci)
 			break
 		}
 	}
