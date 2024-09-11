@@ -25,7 +25,7 @@ func TestGrpcServer(t *testing.T) {
 		Port: "1234",
 	})
 	// app.RegisterGrpcService(&protobuf.BaseService_ServiceDesc, &TestGrpcController{})
-	app.RegisterGrpcController(
+	app.RegisterController(
 		new(TestGrpcController),
 	)
 	err := app.Start()

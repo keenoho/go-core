@@ -101,15 +101,7 @@ func (app *App) RegisterGrpcService(sd *grpc.ServiceDesc, ss any) {
 func (app *App) RegisterController(execController ...ControllerInterface) {
 	for _, controller := range execController {
 		controller.Init(app)
-		controller.URLMapping()
-		controller.Register()
-	}
-}
-
-func (app *App) RegisterGrpcController(execController ...GrpcControllerInterface) {
-	for _, controller := range execController {
-		controller.Init(app)
-		controller.ServiceMapping()
+		controller.Configure()
 		controller.Register(controller)
 	}
 }

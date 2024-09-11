@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"google.golang.org/grpc"
 )
 
 type ControllerResponse struct {
@@ -16,8 +17,8 @@ type ControllerHandler func(ctx *gin.Context)
 
 type ControllerInterface interface {
 	Init(app *App)
-	URLMapping()
-	Register()
+	Configure()
+	Register(ci ControllerInterface)
 }
 
 type ControllerRouteMapStruct struct {
@@ -27,36 +28,70 @@ type ControllerRouteMapStruct struct {
 }
 
 type Controller struct {
-	App        *App
-	PrefixPath string
-	RouteMap   map[string]ControllerRouteMapStruct
+	App            *App
+	PrefixPath     string
+	RouteMap       map[string]ControllerRouteMapStruct
+	ServiceDescMap map[string]*grpc.ServiceDesc
 }
 
-func (c *Controller) URLMapping() {
+func (c *Controller) Configure() {
 	// empty, just for interface
 	/**
-	such as:
-	c.Mapping("/mytest", "GET", c.MyTest)
-	c.PrefixPath = "/some/path"
+	http such as:
+	c.URLMapping("/mytest", "GET", c.MyTest)
+	c.SetPrefixPath("/some/path")
+
+	grpc such as:
+	c.ServiceDescMapping(&protobuf.BaseService_ServiceDesc)
 	*/
 }
 
 func (c *Controller) Init(app *App) {
 	c.App = app
-	c.RouteMap = make(map[string]ControllerRouteMapStruct)
+	switch app.Type {
+	case APP_TYPE_HTTP:
+		{
+			c.RouteMap = make(map[string]ControllerRouteMapStruct)
+			break
+		}
+	case APP_TYPE_GRPC:
+		{
+			c.ServiceDescMap = make(map[string]*grpc.ServiceDesc)
+			break
+		}
+	}
 }
 
 func (c *Controller) SetPrefixPath(prefixPath string) {
 	c.PrefixPath = prefixPath
 }
 
-func (c *Controller) Mapping(path string, method string, handler ControllerHandler) {
+func (c *Controller) URLMapping(path string, method string, handler ControllerHandler) {
 	key := fmt.Sprintf("%s:%s", method, path)
 	value := ControllerRouteMapStruct{Path: path, Method: method, Handler: handler}
 	c.RouteMap[key] = value
 }
 
-func (c *Controller) Register() {
+func (c Controller) ServiceDescMapping(desc *grpc.ServiceDesc) {
+	key := desc.ServiceName
+	c.ServiceDescMap[key] = desc
+}
+
+func (c *Controller) Register(ci ControllerInterface) {
+	switch c.App.Type {
+	case APP_TYPE_HTTP:
+		{
+			c.RegisterHttpController(ci)
+			break
+		}
+	case APP_TYPE_GRPC:
+		{
+			break
+		}
+	}
+}
+
+func (c *Controller) RegisterHttpController(ci ControllerInterface) {
 	var ginRouter *gin.RouterGroup
 	if len(c.PrefixPath) > 0 {
 		ginRouter = c.App.HttpServer.Group(c.PrefixPath)
@@ -84,6 +119,12 @@ func (c *Controller) Register() {
 	}
 }
 
+func (c *Controller) RegisterGrpcController(ci ControllerInterface) {
+	for _, v := range c.ServiceDescMap {
+		c.App.RegisterGrpcService(v, ci)
+	}
+}
+
 func (c *Controller) ControllerToGinHandler(controller ControllerHandler) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		controller(ctx)
@@ -105,11 +146,13 @@ func (c *Controller) SendJson(ctx *gin.Context, args ...any) {
  * @Params: data string, status int
  **/
 func (c *Controller) SendText(ctx *gin.Context, args ...any) {
-	resData, status := MakeResponse(args...)
-	if c.App.Type == APP_TYPE_HTTP {
-		ctx.Header("Cache-Control", "no-cache")
-		ctx.String(status, resData.Data.(string))
+	if c.App.Type != APP_TYPE_HTTP {
+		return
 	}
+	resData, status := MakeResponse(args...)
+	ctx.Header("Cache-Control", "no-cache")
+	ctx.String(status, resData.Data.(string))
+
 }
 
 func (c *Controller) BindParams(ctx *gin.Context, obj any) {
