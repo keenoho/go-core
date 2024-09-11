@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -56,7 +57,7 @@ func HttpErrorMiddleware(errorHandler ...func(any)) gin.HandlerFunc {
 				}
 
 				if !isErrorData {
-					core.Log("[Error] %v", err)
+					log.Println("[Error] httpError:", err)
 				}
 			}
 		}()
