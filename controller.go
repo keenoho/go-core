@@ -34,6 +34,11 @@ type Controller struct {
 
 func (c *Controller) URLMapping() {
 	// empty, just for interface
+	/**
+	such as:
+	c.Mapping("/mytest", "GET", c.MyTest)
+	c.PrefixPath = "/some/path"
+	*/
 }
 
 func (c *Controller) Init(app *App) {
@@ -52,15 +57,11 @@ func (c *Controller) Mapping(path string, method string, handler ControllerHandl
 }
 
 func (c *Controller) Register() {
-	c.RegisterHttpHandler(c.App)
-}
-
-func (c *Controller) RegisterHttpHandler(app *App) {
 	var ginRouter *gin.RouterGroup
 	if len(c.PrefixPath) > 0 {
-		ginRouter = app.HttpServer.Group(c.PrefixPath)
+		ginRouter = c.App.HttpServer.Group(c.PrefixPath)
 	} else {
-		ginRouter = app.HttpServer.Group("")
+		ginRouter = c.App.HttpServer.Group("")
 	}
 	for key := range c.RouteMap {
 		value := c.RouteMap[key]

@@ -9,17 +9,17 @@ import (
 	"time"
 
 	"github.com/keenoho/go-core/grpc_engine"
-	pb "github.com/keenoho/go-core/protobuf"
+	"github.com/keenoho/go-core/protobuf"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
 
 type BaseServiceServer struct {
-	pb.UnimplementedBaseServiceServer
+	protobuf.UnimplementedBaseServiceServer
 }
 
 // implements
-func (s *BaseServiceServer) BaseRequest(ctx context.Context, in *pb.BaseRequestBody) (resp *pb.BaseResponseBody, err error) {
+func (s *BaseServiceServer) BaseRequest(ctx context.Context, in *protobuf.BaseRequestBody) (resp *protobuf.BaseResponseBody, err error) {
 	fmt.Println(in)
 	return resp, err
 }
@@ -31,7 +31,7 @@ func TestBaseProtobuf(t *testing.T) {
 		t.Fatalf("failed to listen: %v", err)
 	}
 	s := grpc.NewServer()
-	pb.RegisterBaseServiceServer(s, &BaseServiceServer{})
+	protobuf.RegisterBaseServiceServer(s, &BaseServiceServer{})
 	if err := s.Serve(lis); err != nil {
 		t.Fatalf("failed to serve: %v", err)
 	}
@@ -39,7 +39,7 @@ func TestBaseProtobuf(t *testing.T) {
 
 func TestGrpcEngine(t *testing.T) {
 	engine := grpc_engine.New()
-	engine.RegisterService(&pb.BaseService_ServiceDesc, &BaseServiceServer{})
+	engine.RegisterService(&protobuf.BaseService_ServiceDesc, &BaseServiceServer{})
 	engine.Run("0.0.0.0:1234")
 }
 
@@ -49,10 +49,10 @@ func TestGrpcEngineRequest(t *testing.T) {
 		t.Fatalf("did not connect: %v", err)
 	}
 	defer conn.Close()
-	c := pb.NewBaseServiceClient(conn)
+	c := protobuf.NewBaseServiceClient(conn)
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
-	r, err := c.BaseRequest(ctx, &pb.BaseRequestBody{Url: "/foo", Data: []byte("bar")})
+	r, err := c.BaseRequest(ctx, &protobuf.BaseRequestBody{Url: "/foo", Data: []byte("bar")})
 	if err != nil {
 		log.Fatalf("could not vist: %v", err)
 	}

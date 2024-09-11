@@ -106,6 +106,14 @@ func (app *App) RegisterController(execController ...ControllerInterface) {
 	}
 }
 
+func (app *App) RegisterGrpcController(execController ...GrpcControllerInterface) {
+	for _, controller := range execController {
+		controller.Init(app)
+		controller.ServiceMapping()
+		controller.Register(controller)
+	}
+}
+
 // start
 func (app *App) Start() error {
 	startUpAddr := fmt.Sprintf("%s:%s", app.Host, app.Port)
