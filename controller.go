@@ -12,7 +12,7 @@ type ControllerResponse struct {
 	Status int
 }
 
-type ControllerHandler func(ctx *Context)
+type ControllerHandler func(ctx *gin.Context)
 
 type ControllerInterface interface {
 	Init(app *App)
@@ -33,6 +33,7 @@ type Controller struct {
 }
 
 func (c *Controller) URLMapping() {
+	// empty, just for interface
 }
 
 func (c *Controller) Init(app *App) {
@@ -51,18 +52,7 @@ func (c *Controller) Mapping(path string, method string, handler ControllerHandl
 }
 
 func (c *Controller) Register() {
-	switch c.App.Type {
-	case APP_TYPE_HTTP:
-		{
-			c.RegisterHttpHandler(c.App)
-			break
-		}
-	case APP_TYPE_GRPC:
-		{
-			c.RegisterGrpcHandler(c.App)
-			break
-		}
-	}
+	c.RegisterHttpHandler(c.App)
 }
 
 func (c *Controller) RegisterHttpHandler(app *App) {
@@ -93,59 +83,41 @@ func (c *Controller) RegisterHttpHandler(app *App) {
 	}
 }
 
-func (c *Controller) RegisterGrpcHandler(app *App) {
-
-}
-
 func (c *Controller) ControllerToGinHandler(controller ControllerHandler) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		controller(&Context{App: c.App, HttpServiceContext: ctx})
+		controller(ctx)
 	}
-}
-
-func (c *Controller) ControllerToGrpcServiceHandler(controller ControllerHandler) {
-
 }
 
 /**
  * @Params: data any, code int64, msg string, status int
  **/
-func (c *Controller) SendJson(ctx *Context, args ...any) {
+func (c *Controller) SendJson(ctx *gin.Context, args ...any) {
 	resData, status := MakeResponse(args...)
 	if c.App.Type == APP_TYPE_HTTP {
-		ctx.HttpServiceContext.Header("Cache-Control", "no-cache")
-		ctx.HttpServiceContext.JSON(status, resData)
+		ctx.Header("Cache-Control", "no-cache")
+		ctx.JSON(status, resData)
 	}
 }
 
 /**
  * @Params: data string, status int
  **/
-func (c *Controller) SendText(ctx *Context, args ...any) {
+func (c *Controller) SendText(ctx *gin.Context, args ...any) {
 	resData, status := MakeResponse(args...)
 	if c.App.Type == APP_TYPE_HTTP {
-		ctx.HttpServiceContext.Header("Cache-Control", "no-cache")
-		ctx.HttpServiceContext.String(status, resData.Data.(string))
+		ctx.Header("Cache-Control", "no-cache")
+		ctx.String(status, resData.Data.(string))
 	}
 }
 
-func (c *Controller) BindParams(ctx *Context, obj any) {
+func (c *Controller) BindParams(ctx *gin.Context, obj any) {
 	if obj == nil {
 		return
 	}
 
-	switch c.App.Type {
-	case APP_TYPE_HTTP:
-		{
-			err := ctx.HttpServiceContext.Copy().ShouldBind(obj)
-			if err != nil {
-				panic(ErrorData{Code: CODE_PARAMS_MISSING})
-			}
-			break
-		}
-	case APP_TYPE_GRPC:
-		{
-			break
-		}
+	err := ctx.Copy().ShouldBind(obj)
+	if err != nil {
+		panic(ErrorData{Code: CODE_PARAMS_MISSING})
 	}
 }

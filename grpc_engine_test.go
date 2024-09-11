@@ -2,6 +2,7 @@ package core_test
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net"
 	"testing"
@@ -18,7 +19,8 @@ type BaseServiceServer struct {
 }
 
 // implements
-func (s *BaseServiceServer) Request(ctx context.Context, in *pb.BaseRequestBody) (resp *pb.BaseResponseBody, err error) {
+func (s *BaseServiceServer) BaseRequest(ctx context.Context, in *pb.BaseRequestBody) (resp *pb.BaseResponseBody, err error) {
+	fmt.Println(in)
 	return resp, err
 }
 
@@ -41,7 +43,7 @@ func TestGrpcEngine(t *testing.T) {
 	engine.Run("0.0.0.0:1234")
 }
 
-func TestGrpcEngineVisit(t *testing.T) {
+func TestGrpcEngineRequest(t *testing.T) {
 	conn, err := grpc.NewClient("0.0.0.0:1234", grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		t.Fatalf("did not connect: %v", err)
@@ -50,7 +52,7 @@ func TestGrpcEngineVisit(t *testing.T) {
 	c := pb.NewBaseServiceClient(conn)
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
-	r, err := c.Request(ctx, &pb.BaseRequestBody{Url: "/foo", Data: []byte("bar")})
+	r, err := c.BaseRequest(ctx, &pb.BaseRequestBody{Url: "/foo", Data: []byte("bar")})
 	if err != nil {
 		log.Fatalf("could not vist: %v", err)
 	}

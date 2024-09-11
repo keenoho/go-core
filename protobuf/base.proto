@@ -14,6 +14,6 @@ message BaseResponseBody {
 }
  
 service BaseService {
-  rpc Request(BaseRequestBody) returns (BaseResponseBody) {}
-  rpc StreamRequest(stream BaseRequestBody) returns (BaseResponseBody) {}
+  rpc BaseRequest(BaseRequestBody) returns (BaseResponseBody) {}
+  rpc BaseStreamRequest(stream BaseRequestBody) returns (BaseResponseBody) {}
 }

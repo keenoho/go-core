@@ -19,16 +19,16 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	BaseService_Request_FullMethodName       = "/BaseService/Request"
-	BaseService_StreamRequest_FullMethodName = "/BaseService/StreamRequest"
+	BaseService_BaseRequest_FullMethodName       = "/BaseService/BaseRequest"
+	BaseService_BaseStreamRequest_FullMethodName = "/BaseService/BaseStreamRequest"
 )
 
 // BaseServiceClient is the client API for BaseService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type BaseServiceClient interface {
-	Request(ctx context.Context, in *BaseRequestBody, opts ...grpc.CallOption) (*BaseResponseBody, error)
-	StreamRequest(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[BaseRequestBody, BaseResponseBody], error)
+	BaseRequest(ctx context.Context, in *BaseRequestBody, opts ...grpc.CallOption) (*BaseResponseBody, error)
+	BaseStreamRequest(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[BaseRequestBody, BaseResponseBody], error)
 }
 
 type baseServiceClient struct {
@@ -39,19 +39,19 @@ func NewBaseServiceClient(cc grpc.ClientConnInterface) BaseServiceClient {
 	return &baseServiceClient{cc}
 }
 
-func (c *baseServiceClient) Request(ctx context.Context, in *BaseRequestBody, opts ...grpc.CallOption) (*BaseResponseBody, error) {
+func (c *baseServiceClient) BaseRequest(ctx context.Context, in *BaseRequestBody, opts ...grpc.CallOption) (*BaseResponseBody, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(BaseResponseBody)
-	err := c.cc.Invoke(ctx, BaseService_Request_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, BaseService_BaseRequest_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *baseServiceClient) StreamRequest(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[BaseRequestBody, BaseResponseBody], error) {
+func (c *baseServiceClient) BaseStreamRequest(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[BaseRequestBody, BaseResponseBody], error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	stream, err := c.cc.NewStream(ctx, &BaseService_ServiceDesc.Streams[0], BaseService_StreamRequest_FullMethodName, cOpts...)
+	stream, err := c.cc.NewStream(ctx, &BaseService_ServiceDesc.Streams[0], BaseService_BaseStreamRequest_FullMethodName, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -60,14 +60,14 @@ func (c *baseServiceClient) StreamRequest(ctx context.Context, opts ...grpc.Call
 }
 
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type BaseService_StreamRequestClient = grpc.ClientStreamingClient[BaseRequestBody, BaseResponseBody]
+type BaseService_BaseStreamRequestClient = grpc.ClientStreamingClient[BaseRequestBody, BaseResponseBody]
 
 // BaseServiceServer is the server API for BaseService service.
 // All implementations must embed UnimplementedBaseServiceServer
 // for forward compatibility.
 type BaseServiceServer interface {
-	Request(context.Context, *BaseRequestBody) (*BaseResponseBody, error)
-	StreamRequest(grpc.ClientStreamingServer[BaseRequestBody, BaseResponseBody]) error
+	BaseRequest(context.Context, *BaseRequestBody) (*BaseResponseBody, error)
+	BaseStreamRequest(grpc.ClientStreamingServer[BaseRequestBody, BaseResponseBody]) error
 	mustEmbedUnimplementedBaseServiceServer()
 }
 
@@ -78,11 +78,11 @@ type BaseServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedBaseServiceServer struct{}
 
-func (UnimplementedBaseServiceServer) Request(context.Context, *BaseRequestBody) (*BaseResponseBody, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Request not implemented")
+func (UnimplementedBaseServiceServer) BaseRequest(context.Context, *BaseRequestBody) (*BaseResponseBody, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BaseRequest not implemented")
 }
-func (UnimplementedBaseServiceServer) StreamRequest(grpc.ClientStreamingServer[BaseRequestBody, BaseResponseBody]) error {
-	return status.Errorf(codes.Unimplemented, "method StreamRequest not implemented")
+func (UnimplementedBaseServiceServer) BaseStreamRequest(grpc.ClientStreamingServer[BaseRequestBody, BaseResponseBody]) error {
+	return status.Errorf(codes.Unimplemented, "method BaseStreamRequest not implemented")
 }
 func (UnimplementedBaseServiceServer) mustEmbedUnimplementedBaseServiceServer() {}
 func (UnimplementedBaseServiceServer) testEmbeddedByValue()                     {}
@@ -105,30 +105,30 @@ func RegisterBaseServiceServer(s grpc.ServiceRegistrar, srv BaseServiceServer) {
 	s.RegisterService(&BaseService_ServiceDesc, srv)
 }
 
-func _BaseService_Request_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _BaseService_BaseRequest_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(BaseRequestBody)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(BaseServiceServer).Request(ctx, in)
+		return srv.(BaseServiceServer).BaseRequest(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: BaseService_Request_FullMethodName,
+		FullMethod: BaseService_BaseRequest_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(BaseServiceServer).Request(ctx, req.(*BaseRequestBody))
+		return srv.(BaseServiceServer).BaseRequest(ctx, req.(*BaseRequestBody))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _BaseService_StreamRequest_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(BaseServiceServer).StreamRequest(&grpc.GenericServerStream[BaseRequestBody, BaseResponseBody]{ServerStream: stream})
+func _BaseService_BaseStreamRequest_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(BaseServiceServer).BaseStreamRequest(&grpc.GenericServerStream[BaseRequestBody, BaseResponseBody]{ServerStream: stream})
 }
 
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type BaseService_StreamRequestServer = grpc.ClientStreamingServer[BaseRequestBody, BaseResponseBody]
+type BaseService_BaseStreamRequestServer = grpc.ClientStreamingServer[BaseRequestBody, BaseResponseBody]
 
 // BaseService_ServiceDesc is the grpc.ServiceDesc for BaseService service.
 // It's only intended for direct use with grpc.RegisterService,
@@ -138,14 +138,14 @@ var BaseService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*BaseServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "Request",
-			Handler:    _BaseService_Request_Handler,
+			MethodName: "BaseRequest",
+			Handler:    _BaseService_BaseRequest_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{
 		{
-			StreamName:    "StreamRequest",
-			Handler:       _BaseService_StreamRequest_Handler,
+			StreamName:    "BaseStreamRequest",
+			Handler:       _BaseService_BaseStreamRequest_Handler,
 			ClientStreams: true,
 		},
 	},
