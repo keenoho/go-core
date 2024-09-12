@@ -17,7 +17,7 @@ func HttpCorsMiddleware(headers ...map[string]string) gin.HandlerFunc {
 		ctx.Header("Access-Control-Allow-Origin", corsAllowOrigin)
 		ctx.Header("Access-Control-Allow-Methods", corsAllowMethods)
 		ctx.Header("Access-Control-Allow-Headers", corsAllowHeaders)
-		ctx.Header("Access-control-max-age", corsMaxAge)
+		ctx.Header("Access-Control-Max-Age", corsMaxAge)
 
 		if ctx.Request.Method == "OPTIONS" {
 			ctx.AbortWithStatus(http.StatusNoContent)
