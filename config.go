@@ -61,14 +61,6 @@ func ConfigLoad(options ...ConfigOption) {
 	var port string = DEFAULT_PORT
 	var mode string = DEFAULT_MODE
 
-	flag.StringVar(&env, "env", DEFAULT_ENV, "env usage")
-	flag.StringVar(&appId, "appId", DEFAULT_APP_ID, "appId usage")
-	flag.StringVar(&appType, "appType", DEFAULT_APP_TYPE, "appType usage")
-	flag.StringVar(&host, "host", DEFAULT_HOST, "host usage")
-	flag.StringVar(&port, "port", DEFAULT_PORT, "port usage")
-	flag.StringVar(&mode, "mode", DEFAULT_MODE, "mode usage")
-	flag.Parse()
-
 	if len(options) > 0 {
 		for _, opt := range options {
 			if len(opt.Env) > 0 {
@@ -80,13 +72,6 @@ func ConfigLoad(options ...ConfigOption) {
 		}
 	}
 
-	os.Setenv(FIELD_ENV, env)
-	os.Setenv(FIELD_APP_ID, appId)
-	os.Setenv(FIELD_APP_TYPE, appType)
-	os.Setenv(FIELD_HOST, host)
-	os.Setenv(FIELD_PORT, port)
-	os.Setenv(FIELD_MODE, mode)
-
 	if len(envDir) > 0 && !strings.HasSuffix(envDir, "/") {
 		envDir = envDir + "/"
 	}
@@ -97,5 +82,29 @@ func ConfigLoad(options ...ConfigOption) {
 	readEnv, _ := godotenv.Read(filenames...)
 	for k, v := range readEnv {
 		os.Setenv(k, v)
+	}
+
+	flag.StringVar(&env, "env", "", "env usage")
+	flag.StringVar(&appId, "appId", "", "appId usage")
+	flag.StringVar(&appType, "appType", "", "appType usage")
+	flag.StringVar(&host, "host", "", "host usage")
+	flag.StringVar(&port, "port", "", "port usage")
+	flag.StringVar(&mode, "mode", "", "mode usage")
+	flag.Parse()
+
+	argsMap := map[string][]string{
+		FIELD_ENV:      {env, DEFAULT_ENV},
+		FIELD_APP_ID:   {appId, DEFAULT_APP_ID},
+		FIELD_APP_TYPE: {appType, DEFAULT_APP_TYPE},
+		FIELD_HOST:     {host, DEFAULT_HOST},
+		FIELD_PORT:     {port, DEFAULT_PORT},
+		FIELD_MODE:     {mode, DEFAULT_MODE},
+	}
+	for k, v := range argsMap {
+		if len(v[0]) > 0 {
+			os.Setenv(k, v[0])
+		} else {
+			os.Setenv(k, v[1])
+		}
 	}
 }
