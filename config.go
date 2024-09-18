@@ -61,6 +61,14 @@ func ConfigLoad(options ...ConfigOption) {
 	var port string = DEFAULT_PORT
 	var mode string = DEFAULT_MODE
 
+	flag.StringVar(&env, "env", DEFAULT_ENV, "env usage")
+	flag.StringVar(&appId, "appId", "", "appId usage")
+	flag.StringVar(&appType, "appType", "", "appType usage")
+	flag.StringVar(&host, "host", "", "host usage")
+	flag.StringVar(&port, "port", "", "port usage")
+	flag.StringVar(&mode, "mode", "", "mode usage")
+	flag.Parse()
+
 	if len(options) > 0 {
 		for _, opt := range options {
 			if len(opt.Env) > 0 {
@@ -72,6 +80,7 @@ func ConfigLoad(options ...ConfigOption) {
 		}
 	}
 
+	os.Setenv(FIELD_ENV, env)
 	if len(envDir) > 0 && !strings.HasSuffix(envDir, "/") {
 		envDir = envDir + "/"
 	}
@@ -84,27 +93,19 @@ func ConfigLoad(options ...ConfigOption) {
 		os.Setenv(k, v)
 	}
 
-	flag.StringVar(&env, "env", "", "env usage")
-	flag.StringVar(&appId, "appId", "", "appId usage")
-	flag.StringVar(&appType, "appType", "", "appType usage")
-	flag.StringVar(&host, "host", "", "host usage")
-	flag.StringVar(&port, "port", "", "port usage")
-	flag.StringVar(&mode, "mode", "", "mode usage")
-	flag.Parse()
-
-	argsMap := map[string][]string{
-		FIELD_ENV:      {env, DEFAULT_ENV},
-		FIELD_APP_ID:   {appId, DEFAULT_APP_ID},
-		FIELD_APP_TYPE: {appType, DEFAULT_APP_TYPE},
-		FIELD_HOST:     {host, DEFAULT_HOST},
-		FIELD_PORT:     {port, DEFAULT_PORT},
-		FIELD_MODE:     {mode, DEFAULT_MODE},
+	if len(appId) > 0 {
+		os.Setenv(FIELD_APP_ID, appId)
 	}
-	for k, v := range argsMap {
-		if len(v[0]) > 0 {
-			os.Setenv(k, v[0])
-		} else {
-			os.Setenv(k, v[1])
-		}
+	if len(appType) > 0 {
+		os.Setenv(FIELD_APP_TYPE, appType)
+	}
+	if len(host) > 0 {
+		os.Setenv(FIELD_HOST, host)
+	}
+	if len(port) > 0 {
+		os.Setenv(FIELD_PORT, port)
+	}
+	if len(mode) > 0 {
+		os.Setenv(FIELD_MODE, mode)
 	}
 }
