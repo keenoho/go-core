@@ -46,6 +46,9 @@ func (e *Engine) Run(addr string) error {
 			e.Server.RegisterService(s.ServiceDesc, s.ServiceServer)
 		}
 	}
+
+	debugPrint("Server listening at %v", addr)
+
 	lis, err := net.Listen("tcp", addr)
 	if err != nil {
 		lis.Close()

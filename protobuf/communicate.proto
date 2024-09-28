@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+option go_package = "./;protobuf";
+ 
+message CommunicateRequestBody {
+  string action = 1;
+  bytes data = 2;
+}
+
+message CommunicateResponseBody {
+  bytes data = 1;
+  int64 code = 2;
+  string msg = 3;
+}
+ 
+service CommunicateService {
+  rpc Call(CommunicateRequestBody) returns (CommunicateResponseBody) {}
+  rpc CallStream(stream CommunicateRequestBody) returns (CommunicateResponseBody) {}
+}

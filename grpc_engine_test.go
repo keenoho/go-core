@@ -52,7 +52,7 @@ func TestGrpcEngineRequest(t *testing.T) {
 	c := protobuf.NewBaseServiceClient(conn)
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
-	r, err := c.BaseRequest(ctx, &protobuf.BaseRequestBody{Url: "/foo", Data: []byte("bar")})
+	r, err := c.BaseRequest(ctx, &protobuf.BaseRequestBody{Action: "foo", Data: []byte("bar")})
 	if err != nil {
 		log.Fatalf("could not vist: %v", err)
 	}
