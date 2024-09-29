@@ -13,7 +13,7 @@ message BaseResponseBody {
   string msg = 3;
 }
  
-service BaseService {
+service Base {
   rpc BaseRequest(BaseRequestBody) returns (BaseResponseBody) {}
   rpc BaseStreamRequest(stream BaseRequestBody) returns (BaseResponseBody) {}
 }

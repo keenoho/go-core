@@ -25,11 +25,11 @@ func (c *TestHttpController) MyTest(ctx *gin.Context) {
 // grpc
 type TestGrpcController struct {
 	core.Controller
-	protobuf.UnimplementedBaseServiceServer
+	protobuf.UnimplementedBaseServer
 }
 
 func (c *TestGrpcController) Configure() {
-	c.ServiceDescMapping(&protobuf.BaseService_ServiceDesc)
+	c.ServiceDescMapping(&protobuf.Base_ServiceDesc)
 }
 
 func (c *TestGrpcController) BaseRequest(ctx context.Context, in *protobuf.BaseRequestBody) (resp *protobuf.BaseResponseBody, err error) {
