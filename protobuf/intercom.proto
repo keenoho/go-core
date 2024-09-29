@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+option go_package = "./;protobuf";
+ 
+message IntercomRequestBody {
+  string action = 1;
+  bytes data = 2;
+}
+
+message IntercomResponseBody {
+  bytes data = 1;
+  int64 code = 2;
+  string msg = 3;
+}
+ 
+service Intercom {
+  rpc IntercomRequest(IntercomRequestBody) returns (IntercomResponseBody) {}
+  rpc IntercomStreamRequest(stream IntercomRequestBody) returns (IntercomResponseBody) {}
+}
