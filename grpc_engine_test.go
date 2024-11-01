@@ -49,7 +49,7 @@ func TestGrpcEngineRequest(t *testing.T) {
 		t.Fatalf("did not connect: %v", err)
 	}
 	defer conn.Close()
-	c := protobuf.NewBaseServiceClient(conn)
+	c := protobuf.NewBaseClient(conn)
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 	r, err := c.BaseRequest(ctx, &protobuf.BaseRequestBody{Action: "foo", Data: []byte("bar")})
