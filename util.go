@@ -28,9 +28,9 @@ func MakeResponse(args ...any) (ResponseData, int) {
 		case 1:
 			{
 				codeValue, _ := v.(int64)
-				codeValueInt, _ := v.(int)
+				codeValueInt, isInt := v.(int)
 
-				if codeValue < 1 && codeValueInt > 0 {
+				if isInt {
 					codeValue = int64(codeValueInt)
 				}
 

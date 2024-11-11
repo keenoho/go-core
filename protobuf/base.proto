@@ -3,8 +3,9 @@ syntax = "proto3";
 option go_package = "./;protobuf";
  
 message BaseRequestBody {
-  string action = 1;
-  bytes data = 2;
+  string path = 1;
+  bytes body = 2;
+  bytes query = 3;
 }
 
 message BaseResponseBody {

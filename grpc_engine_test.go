@@ -15,7 +15,7 @@ import (
 )
 
 type BaseServiceServer struct {
-	protobuf.UnimplementedBaseServiceServer
+	protobuf.UnimplementedBaseServer
 }
 
 // implements
@@ -31,7 +31,7 @@ func TestBaseProtobuf(t *testing.T) {
 		t.Fatalf("failed to listen: %v", err)
 	}
 	s := grpc.NewServer()
-	protobuf.RegisterBaseServiceServer(s, &BaseServiceServer{})
+	protobuf.RegisterBaseServer(s, &BaseServiceServer{})
 	if err := s.Serve(lis); err != nil {
 		t.Fatalf("failed to serve: %v", err)
 	}
@@ -39,7 +39,7 @@ func TestBaseProtobuf(t *testing.T) {
 
 func TestGrpcEngine(t *testing.T) {
 	engine := grpc_engine.New()
-	engine.RegisterService(&protobuf.BaseService_ServiceDesc, &BaseServiceServer{})
+	engine.RegisterService(&protobuf.Base_ServiceDesc, &BaseServiceServer{})
 	engine.Run("0.0.0.0:1234")
 }
 
@@ -52,7 +52,7 @@ func TestGrpcEngineRequest(t *testing.T) {
 	c := protobuf.NewBaseClient(conn)
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
-	r, err := c.BaseRequest(ctx, &protobuf.BaseRequestBody{Action: "foo", Data: []byte("bar")})
+	r, err := c.BaseRequest(ctx, &protobuf.BaseRequestBody{Url: "some url", Body: []byte("foo")})
 	if err != nil {
 		log.Fatalf("could not vist: %v", err)
 	}
