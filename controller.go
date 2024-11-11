@@ -137,7 +137,6 @@ func (c *Controller) ControllerToGinHandler(controller ControllerHandler) gin.Ha
  **/
 func (c *Controller) SendJson(ctx *gin.Context, args ...any) {
 	resData, status := MakeResponse(args...)
-	fmt.Println(resData)
 	if c.App.Type == APP_TYPE_HTTP {
 		ctx.Header("Cache-Control", "no-cache")
 		ctx.JSON(status, resData)
