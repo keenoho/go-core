@@ -64,15 +64,11 @@ func (app *App) Init() {
 func (app *App) initHttpServer() {
 	app.HttpServer = gin.New()
 	trustedProxies := ConfigGet("TRUSTED_PROXIES")
-	staticDir := ConfigGet("STATIC_DIR")
-	staticPath := ConfigGet("STATIC_PATH")
+
 	if len(trustedProxies) > 0 {
 		app.HttpServer.SetTrustedProxies([]string{trustedProxies})
 	} else {
 		app.HttpServer.SetTrustedProxies([]string{"*"})
-	}
-	if len(staticDir) > 0 && len(staticPath) > 0 {
-		app.HttpServer.Static(staticPath, staticDir)
 	}
 }
 
