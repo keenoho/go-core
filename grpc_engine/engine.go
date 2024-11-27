@@ -1,6 +1,8 @@
 package grpc_engine
 
 import (
+	"context"
+	"fmt"
 	"net"
 
 	"google.golang.org/grpc"
@@ -43,6 +45,25 @@ func (e *Engine) Run(addr string) error {
 			if t, ok := s.ServiceServer.(interface{ testEmbeddedByValue() }); ok {
 				t.testEmbeddedByValue()
 			}
+			oldMethods := s.ServiceDesc.Methods
+			newMethods := []grpc.MethodDesc{}
+			for _, method := range oldMethods {
+				newMethods = append(newMethods, grpc.MethodDesc{
+					MethodName: method.MethodName,
+					Handler: func(srv any, ctx context.Context, dec func(any) error, interceptor grpc.UnaryServerInterceptor) (_ any, err error) {
+						defer func() {
+							execErr := recover()
+							if execErr != nil {
+								err = fmt.Errorf("%v", execErr)
+							}
+						}()
+
+						return method.Handler(srv, ctx, dec, interceptor)
+					},
+				})
+			}
+			s.ServiceDesc.Methods = newMethods
+
 			e.Server.RegisterService(s.ServiceDesc, s.ServiceServer)
 		}
 	}
