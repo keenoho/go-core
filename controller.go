@@ -42,7 +42,7 @@ func (c *Controller) Configure() {
 	c.SetPrefixPath("/some/path")
 
 	grpc such as:
-	c.ServiceDescMapping(&protobuf.BaseService_ServiceDesc)
+	c.ServiceDescMapping(&protobuf.RouterService_ServiceDesc)
 	*/
 }
 

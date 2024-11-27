@@ -1,4 +1,4 @@
-# base protobuf
+# protobuf
 
 ## prepare
 
@@ -18,18 +18,18 @@ Server Side:
 
 ```go
 // define struct
-type BaseServiceServer struct {
-	pb.UnimplementedBaseServiceServer
+type RouterServiceServer struct {
+	pb.UnimplementedRouterServiceServer
 }
 // implements
-func (s *BaseServiceServer) Request(ctx context.Context, in *pb.BaseRequestBody) (resp *pb.BaseResponseBody, err error) {
+func (s *RouterServiceServer) Request(ctx context.Context, in *pb.RouterRequestBody) (resp *pb.RouterResponseBody, err error) {
 	return resp, err
 }
 
 // main
 // use engine
 engine := grpc_engine.New()
-engine.RegisterService(&pb.BaseService_ServiceDesc, &BaseServiceServer{})
+engine.RegisterService(&pb.RouterService_ServiceDesc, &RouterServiceServer{})
 engine.Run("0.0.0.0:1234")
 
 // or use origin code
@@ -39,7 +39,7 @@ if err != nil {
    t.Fatalf("failed to listen: %v", err)
 }
 s := grpc.NewServer()
-pb.RegisterBaseServiceServer(s, &BaseServiceServer{})
+pb.RegisterRouterServiceServer(s, &RouterServiceServer{})
 if err := s.Serve(lis); err != nil {
    t.Fatalf("failed to serve: %v", err)
 }
@@ -53,10 +53,10 @@ if err != nil {
    t.Fatalf("did not connect: %v", err)
 }
 defer conn.Close()
-c := pb.NewBaseServiceClient(conn)
+c := pb.NewRouterServiceClient(conn)
 ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 defer cancel()
-r, err := c.Request(ctx, &pb.BaseRequestBody{Url: "/foo", Data: []byte("bar")})
+r, err := c.Request(ctx, &pb.RouterRequestBody{Url: "/foo", Data: []byte("bar")})
 if err != nil {
    log.Fatalf("could not vist: %v", err)
 }

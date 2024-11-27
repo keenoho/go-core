@@ -14,24 +14,24 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-type BaseServiceServer struct {
-	protobuf.UnimplementedBaseServer
+type RouterServiceServer struct {
+	protobuf.UnimplementedRouterServer
 }
 
 // implements
-func (s *BaseServiceServer) BaseRequest(ctx context.Context, in *protobuf.BaseRequestBody) (resp *protobuf.BaseResponseBody, err error) {
+func (s *RouterServiceServer) RouterRequest(ctx context.Context, in *protobuf.RouterRequestBody) (resp *protobuf.RouterResponseBody, err error) {
 	fmt.Println(in)
 	return resp, err
 }
 
-func TestBaseProtobuf(t *testing.T) {
+func TestRouterProtobuf(t *testing.T) {
 	lis, err := net.Listen("tcp", "0.0.0.0:1234")
 	if err != nil {
 		lis.Close()
 		t.Fatalf("failed to listen: %v", err)
 	}
 	s := grpc.NewServer()
-	protobuf.RegisterBaseServer(s, &BaseServiceServer{})
+	protobuf.RegisterRouterServer(s, &RouterServiceServer{})
 	if err := s.Serve(lis); err != nil {
 		t.Fatalf("failed to serve: %v", err)
 	}
@@ -39,7 +39,7 @@ func TestBaseProtobuf(t *testing.T) {
 
 func TestGrpcEngine(t *testing.T) {
 	engine := grpc_engine.New()
-	engine.RegisterService(&protobuf.Base_ServiceDesc, &BaseServiceServer{})
+	engine.RegisterService(&protobuf.Router_ServiceDesc, &RouterServiceServer{})
 	engine.Run("0.0.0.0:1234")
 }
 
@@ -49,10 +49,10 @@ func TestGrpcEngineRequest(t *testing.T) {
 		t.Fatalf("did not connect: %v", err)
 	}
 	defer conn.Close()
-	c := protobuf.NewBaseClient(conn)
+	c := protobuf.NewRouterClient(conn)
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
-	r, err := c.BaseRequest(ctx, &protobuf.BaseRequestBody{Url: "some url", Body: []byte("foo")})
+	r, err := c.RouterRequest(ctx, &protobuf.RouterRequestBody{Url: "some url", Body: []byte("foo")})
 	if err != nil {
 		log.Fatalf("could not vist: %v", err)
 	}

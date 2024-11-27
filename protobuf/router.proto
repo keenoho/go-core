@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+option go_package = "./;protobuf";
+ 
+message RouterRequestBody {
+  string path = 1;
+  bytes body = 2;
+  bytes query = 3;
+}
+
+message RouterResponseBody {
+  bytes data = 1;
+  int64 code = 2;
+  string msg = 3;
+}
+ 
+service Router {
+  rpc RouterRequest(RouterRequestBody) returns (RouterResponseBody) {}
+  rpc RouterStreamRequest(stream RouterRequestBody) returns (RouterResponseBody) {}
+}

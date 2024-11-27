@@ -25,14 +25,14 @@ func (c *TestHttpController) MyTest(ctx *gin.Context) {
 // grpc
 type TestGrpcController struct {
 	core.Controller
-	protobuf.UnimplementedBaseServer
+	protobuf.UnimplementedRouterServer
 }
 
 func (c *TestGrpcController) Configure() {
-	c.ServiceDescMapping(&protobuf.Base_ServiceDesc)
+	c.ServiceDescMapping(&protobuf.Router_ServiceDesc)
 }
 
-func (c *TestGrpcController) BaseRequest(ctx context.Context, in *protobuf.BaseRequestBody) (resp *protobuf.BaseResponseBody, err error) {
+func (c *TestGrpcController) RouterRequest(ctx context.Context, in *protobuf.RouterRequestBody) (resp *protobuf.RouterResponseBody, err error) {
 	fmt.Println(in)
 	return resp, err
 }

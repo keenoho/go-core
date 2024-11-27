@@ -24,7 +24,7 @@ func TestGrpcServer(t *testing.T) {
 		Type: core.APP_TYPE_GRPC,
 		Port: "1234",
 	})
-	// app.RegisterGrpcService(&protobuf.BaseService_ServiceDesc, &TestGrpcController{})
+	// app.RegisterGrpcService(&protobuf.RouterService_ServiceDesc, &TestGrpcController{})
 	app.RegisterController(
 		new(TestGrpcController),
 	)
