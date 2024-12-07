@@ -18,6 +18,8 @@ func MakeResponse(args ...any) (ResponseData, int) {
 		Msg:  "ok",
 		Time: now.UnixMilli(),
 	}
+	emptyDataWhenError := true
+	hasErr := false
 	for i, v := range args {
 		switch i {
 		case 0:
@@ -44,6 +46,7 @@ func MakeResponse(args ...any) (ResponseData, int) {
 						resData.Msg = errValue.Error()
 						codeValue = -1
 					}
+					hasErr = true
 				}
 
 				resData.Code = codeValue
@@ -66,6 +69,7 @@ func MakeResponse(args ...any) (ResponseData, int) {
 
 				if isErr {
 					msgValue = errValue.Error()
+					hasErr = true
 				}
 
 				if len(msgValue) > 0 {
@@ -82,7 +86,21 @@ func MakeResponse(args ...any) (ResponseData, int) {
 				}
 				break
 			}
+		case 4:
+			{
+				emptyDataWhenErrorValue, isBool := v.(bool)
+				if isBool {
+					emptyDataWhenError = emptyDataWhenErrorValue
+				}
+				break
+			}
 		}
+
 	}
+
+	if hasErr && emptyDataWhenError {
+		resData.Data = nil
+	}
+
 	return resData, status
 }
